@@ -1,0 +1,56 @@
+﻿name: Security Scan
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: '0 3 * * 1'   # 每周一 03:00 UTC
+
+permissions:
+  contents: read          # CI 最小权限：只读仓库内容
+
+jobs:
+  npm-audit:
+    name: npm audit (high+)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: desktop/package-lock.json
+      - name: Install deps
+        working-directory: desktop
+        run: npm ci --ignore-scripts
+      - name: Audit
+        working-directory: desktop
+        run: npm audit --audit-level=high || true
+      - name: SBOM (CycloneDX)
+        working-directory: desktop
+        run: npx @cyclonedx/cyclonedx-npm --output-file sbom.json
+      - name: Upload SBOM artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: sbom.json
+          path: desktop/sbom.json
+
+  codeql:
+    name: CodeQL Analysis
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write   # CodeQL 需要写 security-events 才能上传结果
+    strategy:
+      fail-fast: false
+      matrix:
+        language: ['javascript-typescript']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: github/codeql-action/init@v3
+        with:
+          languages: ${{ matrix.language }}
+      - uses: github/codeql-action/autobuild@v3
+      - uses: github/codeql-action/analyze@v3
