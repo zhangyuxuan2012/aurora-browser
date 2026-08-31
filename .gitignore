@@ -1,0 +1,28 @@
+# ---- 大体积二进制 / 生成产物（放入 GitHub Release，不入库） ----
+*.exe
+*.dmg
+*.zip
+极光浏览器-完整版-内嵌EXE.html
+张雨轩浏览器导航-完整版-内嵌EXE.html
+张雨轩浏览器导航-桌面版EXE-绿色免安装.exe
+张雨轩浏览器导航_最终版.html
+
+# ---- 本地备份与临时分析 ----
+_backup_20260831/
+_repo_staging/
+_scripts/
+
+# ---- 依赖 ----
+node_modules/
+desktop/node_modules/
+desktop/dist/
+desktop/out/
+
+# ---- 凭据 / 环境 ----
+*.token
+.github_token
+*.env
+
+# ---- 系统文件 ----
+Thumbs.db
+.DS_Store
