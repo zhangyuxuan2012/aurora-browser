@@ -146,4 +146,8 @@ npm run dist:mac     # 在 macOS 上构建 dmg/zip
 
 ---
 
-© 2026 张雨轩（zhangyuxuan2012）
+## Copyright
+
+Copyright (c) 2026 张雨轩（zhangyuxuan2012）.
+
+本项目为本人独立创作，AI 仅作为编程辅助工具。
