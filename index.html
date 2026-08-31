@@ -2699,7 +2699,7 @@ body.mini-dragging { cursor: ns-resize !important; user-select: none !important;
 .settings-panel-body::-webkit-scrollbar-thumb { background: rgba(128,134,139,0.4); border-radius: 4px; }
 .settings-panel-body::-webkit-scrollbar-track { background: transparent; }
 /* ===== V7.1 溢出加固：长网址/长标题不再撑破布局 ===== */
-.tab-title, .address-input, #address-input, .bm-name, .bm-url, .history-url, .download-url, .se-url, .menu-item, .panel-item-name, .quick-title, .recent-title {
+.tab-title, .address-bar, #address-bar, .bm-name, .bm-url, .history-url, .download-url, .se-url, .menu-item, .panel-item-name, .quick-title, .recent-title {
   max-width: 100%; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
 .history-url, .download-url, .bm-url { display: block; overflow-wrap: anywhere; word-break: break-all; white-space: nowrap; }
@@ -2719,6 +2719,52 @@ body.mini-dragging { cursor: ns-resize !important; user-select: none !important;
   }
   .tab-strip { touch-action: pan-x pan-y; }
   .icon-btn:active, .tool-card:active, .tab:active { transform: scale(0.94); }
+}
+
+/* ===== V7.1.1 工具栏/弹窗/触控 真实修复 ===== */
+/* 1) 工具栏 flex 收缩修复：杜绝窄屏横向溢出 */
+.toolbar { min-width: 0; overflow: hidden; }
+.nav-buttons { flex-shrink: 0; }
+.address-bar-wrap { flex: 1 1 auto; min-width: 0; }
+.nav-right { flex-shrink: 0; }
+/* 窄屏（手机/平板竖屏）收起次要按钮，核心功能仍可从 ⋮ 菜单访问 */
+@media (max-width: 700px) {
+  #home-btn, #find-btn, #bookmarks-btn, #history-btn, #downloads-btn, #quick-cover-btn { display: none !important; }
+  .toolbar { gap: 2px; padding: 0 4px; }
+  .nav-buttons .icon-btn { min-width: 40px; width: 40px; height: 40px; }
+  #menu-btn { min-width: 40px; width: 40px; height: 40px; }
+}
+@media (max-width: 360px) {
+  #refresh-btn { display: none !important; }
+}
+/* 2) 下载弹窗：内容多时可滚动，不再溢出视口 */
+.download-modal {
+  max-height: min(86vh, 720px) !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  -webkit-overflow-scrolling: touch !important;
+  overscroll-behavior-y: contain !important;
+}
+.download-modal .dm-header { position: sticky; top: 0; z-index: 2; }
+.download-modal .dm-footer { position: sticky; bottom: 0; z-index: 2; }
+/* 3) 侧边面板 / 设置面板滚动兜底 */
+.side-panel { max-height: calc(100vh - 100px) !important; }
+.side-panel-body { overflow-y: auto !important; overflow-x: hidden !important; min-height: 0 !important; }
+/* 4) 通用文字换行兜底：所有弹窗/菜单/面板文本不撑破布局 */
+.menu-item, .menu-item span, .setting-label, .setting-desc, .panel-item-name,
+.dm-title, .dm-subtitle, .dm-note, .dm-mobile-note, .announce-title,
+.announce-subtitle, .announce-body, .announce-feature-text,
+.blocked-url, .blocked-desc, .blocked-client-title, .blocked-client-desc,
+.se-name, .se-url, .bm-name, .bm-url, .history-url, .download-url {
+  max-width: 100%; overflow-wrap: anywhere; word-break: break-word;
+}
+.menu-item span:first-child { overflow-wrap: break-word; word-break: break-word; }
+/* 5) 触控滚动兜底：所有可能滚动区域支持触摸滚动 */
+@media (pointer: coarse), (max-width: 1024px) {
+  .download-modal, .download-modal * { touch-action: pan-y !important; }
+  .side-panel-body, .settings-panel-body, .menu-dropdown, .context-menu,
+  .se-list, .bookmark-list, .history-list, .downloads-list, .cover-panel-body,
+  .omnibox-suggestions { touch-action: pan-y !important; -webkit-overflow-scrolling: touch !important; }
 }
 
 </style>
@@ -5038,7 +5084,7 @@ body.mini-dragging { cursor: ns-resize !important; user-select: none !important;
   const LS_DOWNLOAD_MODAL = 'trae_download_modal'; // true => never show again
   /* ---------- Embedded EXE (已内嵌本网页，任何电脑可直接下载，不依赖任何外部路径/相对路径) ---------- */
   const EMBEDDED_EXE_NAME = '极光浏览器-绿色免安装版.exe';
-  const EMBEDDED_EXE_SIZE_MB = 70.9;
+  const EMBEDDED_EXE_SIZE_MB = 70.8;
   // 轻量版：桌面版 EXE 与本网页放同一目录，通过相对路径下载
   const EMBEDDED_EXE_REL = 'https://github.com/zhangyuxuan2012/aurora-browser/releases/latest/download/AuroraBrowser-Portable-v7.0.0.exe';
   let __embeddedExeUrl = null;
