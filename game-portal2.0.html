@@ -5424,7 +5424,7 @@ loadingConfirm.addEventListener('click', function() {
         }
       }
     }
-    window.open(pendingUrl, '_blank', 'noopener,noreferrer');
+    window.openExternal(pendingUrl);
     pendingUrl = null;
   }
 });
@@ -7066,7 +7066,7 @@ function tryPollinationsFallback(query, callback) {
     addToHistory(currentPreviewSite);
     if (previewOverlay) previewOverlay.classList.remove('show');
     // 打开网站
-    window.open(currentPreviewSite.url, '_blank', 'noopener,noreferrer');
+    window.openExternal(currentPreviewSite.url);
   });
 
   // 暴露给全局
@@ -7314,6 +7314,41 @@ function tryPollinationsFallback(query, callback) {
     setTimeout(setVH, 100);
   }, { passive: true });
 
+  // 【修复-2026-08-31】安全震动：嵌套 iframe 内 navigator.vibrate 可能被策略禁用/抛异常
+  (function() {
+    try {
+      var _ov = navigator.vibrate && navigator.vibrate.bind(navigator);
+      navigator.vibrate = function(ms) { try { return _ov ? _ov(ms) : false; } catch(e) { return false; } };
+    } catch(e) {}
+  })();
+  // 【修复-2026-08-31】全局外链打开：被嵌套 iframe 拦截（window.open 返回 null/抛错）时，
+  // 降级为 postMessage 通知父页面（极光浏览器）在内部标签打开；父页不可用时再本页跳转
+  function openExternal(url) {
+    if (!url) return false;
+    var w = null;
+    try { w = window.open(url, '_blank', 'noopener,noreferrer'); } catch(e) { w = null; }
+    if (w && !w.closed) { try { w.opener = null; } catch(e) {} return true; }
+    try {
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage({ type: 'aurora-open', url: url }, '*');
+        return true;
+      }
+    } catch(e) {}
+    try { window.location.href = url; return true; } catch(e) {}
+    return false;
+  }
+  window.openExternal = openExternal;
+  // 【修复-2026-08-31】灵动岛提示（此前多处调用但从未定义，导致切换分类/收藏无反馈）
+  function showIsland(text, duration) {
+    var di = document.getElementById('dynamic-island');
+    if (!di) return;
+    var dt = document.getElementById('di-text');
+    if (dt) dt.textContent = text;
+    di.classList.add('show');
+    clearTimeout(showIsland._t);
+    showIsland._t = setTimeout(function() { di.classList.remove('show'); }, duration || 1600);
+  }
+  window.showIsland = showIsland;
   // 11. 全局左右滑动手势：切换分类
   (function() {
     var touchStartX = 0, touchStartY = 0, touchEndX = 0, touchEndY = 0;
@@ -7324,7 +7359,7 @@ function tryPollinationsFallback(query, callback) {
       if (e.touches.length !== 1) return;
       // 如果在输入框、模态框、面板内，不触发
       var target = e.target;
-      if (target.closest('input, textarea, .ai-panel, .fav-panel, .sim-modal, .dev-overlay, .code-viewer, .preview-overlay, .update-log-overlay, .shortcut-hint, .loading-overlay, .welcome-overlay, .hot-tip-overlay, .temp-warn-overlay')) return;
+      if (target && target.closest && target.closest('input, textarea, .ai-panel, .fav-panel, .sim-modal, .dev-overlay, .code-viewer, .preview-overlay, .update-log-overlay, .shortcut-hint, .loading-overlay, .welcome-overlay, .hot-tip-overlay, .temp-warn-overlay')) return;
       touchStartX = e.touches[0].clientX;
       touchStartY = e.touches[0].clientY;
     }, { passive: true });
@@ -7340,7 +7375,7 @@ function tryPollinationsFallback(query, callback) {
       // 水平滑动且垂直偏移不大
       if (Math.abs(dx) > swipeThreshold && Math.abs(dy) < verticalThreshold) {
         var target = e.target;
-        if (target.closest('input, textarea, .ai-panel, .fav-panel, .sim-modal, .dev-overlay, .code-viewer, .preview-overlay, .update-log-overlay, .shortcut-hint, .loading-overlay, .welcome-overlay, .hot-tip-overlay, .temp-warn-overlay')) return;
+        if (target && target.closest && target.closest('input, textarea, .ai-panel, .fav-panel, .sim-modal, .dev-overlay, .code-viewer, .preview-overlay, .update-log-overlay, .shortcut-hint, .loading-overlay, .welcome-overlay, .hot-tip-overlay, .temp-warn-overlay')) return;
 
         // 找到当前分类索引
         if (typeof activeCat !== 'undefined' && typeof CATS !== 'undefined') {
@@ -7357,7 +7392,7 @@ function tryPollinationsFallback(query, callback) {
             tabBtns[catIndex].click();
             if (navigator.vibrate) navigator.vibrate(10);
             // 显示灵动岛提示
-            if (typeof showIsland === 'function') {
+            if (typeof window.showIsland === 'function') {
               showIsland('📱 ' + CATS[catIndex].name, 1500);
             }
           }
@@ -7406,7 +7441,7 @@ function tryPollinationsFallback(query, callback) {
             }
             if (navigator.vibrate) navigator.vibrate(20);
             // 灵动岛提示
-            if (typeof showIsland === 'function') {
+            if (typeof window.showIsland === 'function') {
               showIsland(added ? '⭐ 已收藏 ' + site.name : '☆ 已取消收藏', 2000);
             }
           }
