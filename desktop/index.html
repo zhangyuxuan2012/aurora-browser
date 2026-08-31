@@ -2625,6 +2625,18 @@ body.mini-dragging { cursor: ns-resize !important; user-select: none !important;
         .dm-mobile-note { font-size:13px;line-height:1.8;color:var(--text);background:var(--bg3);border-radius:10px;padding:14px 16px; }
         .dm-mobile-note b { color:var(--accent); }
         body.theme-incognito .dm-pick a.dm-opt { background: rgba(197,138,249,0.08); border:1.5px solid var(--accent); }
+        /* V7.2.1 下载面板：Windows / macOS 双入口 + 常见问题 */
+        .dm-os-title { font-size:13px;font-weight:600;color:var(--text-secondary);margin:2px 0 8px; }
+        .dm-os-grid { display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px; }
+        .dm-os-btn { display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:14px 10px;border-radius:12px;text-decoration:none;color:var(--text);background:var(--bg3);border:1.5px solid var(--bg4, rgba(128,128,128,0.25));transition:all 0.15s var(--ease); }
+        .dm-os-btn:hover { transform:translateY(-2px);box-shadow:var(--shadow);border-color:var(--accent); }
+        .dm-os-ic { font-size:28px;line-height:1; }
+        .dm-os-btn span:last-child { font-size:13px;font-weight:600; }
+        .dm-faq { margin-top:12px;font-size:12.5px;line-height:1.8;color:var(--text-secondary);background:var(--bg3);border-radius:10px;padding:12px 14px; }
+        .dm-faq-title { font-weight:600;color:var(--text);margin-bottom:6px;font-size:13px; }
+        .dm-faq b { color:var(--accent); }
+        .dm-sep { height:1px;background:var(--bg4, rgba(128,128,128,0.25));margin:12px 0; }
+
       
 /* ============================================================
  * V7.0 滚动 / 触控 / 弹窗溢出修复
@@ -5202,6 +5214,19 @@ body.mini-dragging { cursor: ns-resize !important; user-select: none !important;
         html = '<div class="dm-mobile-note">⚠️ 桌面版文件加载失败，请刷新本页后重试。</div>';
       }
     }
+    // V7.2.1：Windows / macOS 双下载入口 + 常见问题（所有平台统一显示）
+    var GH_LATEST = 'https://github.com/zhangyuxuan2012/aurora-browser/releases/latest';
+    var osBtns =
+      '<div class="dm-os-title">📥 选择你的操作系统，下载桌面版：</div>' +
+      '<div class="dm-os-grid">' +
+      '<a class="dm-os-btn" href="' + GH_LATEST + '" target="_blank" rel="noopener"><span class="dm-os-ic">🪟</span><span>Windows 版下载</span></a>' +
+      '<a class="dm-os-btn" href="' + GH_LATEST + '" target="_blank" rel="noopener"><span class="dm-os-ic">🍎</span><span>macOS 版下载</span></a>' +
+      '</div>' +
+      '<div class="dm-faq"><div class="dm-faq-title">❓ 常见问题</div>' +
+      '<p><b>Windows：</b>首次运行若出现 <b>SmartScreen</b> 蓝色警告，点击「<b>更多信息</b>」→「<b>仍要运行</b>」即可打开。</p>' +
+      '<p><b>macOS：</b>首次打开若被系统拦截，请到「<b>系统设置 → 隐私与安全性</b>」→ 点击「<b>仍要打开</b>」。</p>' +
+      '<p>Windows 与 macOS 版本均从 <b>GitHub Release</b> 获取，任何电脑都可下载。</p></div>';
+    html = osBtns + (html ? '<div class="dm-sep"></div>' + html : '');
     pick.innerHTML = html;
   }
   function hideDownloadModal() {
