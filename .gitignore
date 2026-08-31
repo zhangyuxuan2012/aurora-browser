@@ -1,4 +1,4 @@
-# ---- 大体积二进制 / 生成产物（放入 GitHub Release，不入库） ----
+﻿# ---- 大体积二进制 / 生成产物（放入 GitHub Release，不入库） ----
 *.exe
 *.dmg
 *.zip
@@ -10,6 +10,7 @@
 # ---- 本地备份与临时分析 ----
 _backup_20260831/
 _repo_staging/
+_promo/
 _scripts/
 
 # ---- 依赖 ----
