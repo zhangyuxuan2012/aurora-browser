@@ -13,9 +13,12 @@
 | --- | --- | --- |
 | **网页版（在线使用，含移动端适配）** | 单文件 HTML（1.3MB） | 直接打开在线体验链接，或从 `html/` 下载 |
 | **完整版（单文件内嵌 EXE）** | `AuroraBrowser-Web-v7.0.0.html`（95.8MB） | [GitHub Release 下载](https://github.com/zhangyuxuan2012/aurora-browser/releases/latest/download/AuroraBrowser-Web-v7.0.0.html) |
-| **桌面版 EXE（绿色免安装）** | `AuroraBrowser-Portable-v7.0.0.exe`（74.4MB） | [GitHub Release 下载](https://github.com/zhangyuxuan2012/aurora-browser/releases/latest/download/AuroraBrowser-Portable-v7.0.0.exe) |
+| **桌面版 EXE（绿色免安装）** | `AuroraBrowser-Portable-v7.0.0.exe`（70.9MB） | [GitHub Release 下载](https://github.com/zhangyuxuan2012/aurora-browser/releases/latest/download/AuroraBrowser-Portable-v7.0.0.exe) |
 | **历史版本** | v6 各版本 HTML / JS | `history/` 目录 |
 
+> 💡 **网页版一键下载桌面版**：网页版的「下载桌面版」按钮会直接从 GitHub Release 稳定链接获取 EXE，
+> 任何电脑（Windows / macOS）打开网页版都能下载到完整 EXE，无需依赖发布者本机。
+>
 > Release 页面：https://github.com/zhangyuxuan2012/aurora-browser/releases
 
 ---
@@ -62,6 +65,8 @@
 - **🛡️ 内置防弹窗插件「极光防弹窗」**：默认开启，可统计拦截数量、随时开关
 - **🧩 网页版插件系统**：网页版也能安装插件（manifest 驱动：注入 CSS/JS、整站拦截规则、防弹窗增强）
 - **📥 导入其他浏览器数据**：一键导入 Chrome / Edge / Firefox 的书签（网页版手动选文件，桌面版自动扫描本机浏览器）
+- **🕶️ 隐私浏览（无痕）**：快捷键 `Ctrl+Shift+P` 或菜单一键开启，开启后历史 / 书签 / 设置均不落盘（Chrome 无痕同款体验），界面显示隐私徽标，关闭后一切恢复
+- **🎨 标签页个性化**：右键任意标签页 →「自定义标签外观」，可为每个标签单独设置 10 种颜色 + 5 种动态效果（呼吸 / 流光 / 脉冲 / 光晕等），互不影响
 - **🔒 隐私保护**：一键清除缓存 / Cookie / 本地记录
 - **🌐 设为默认浏览器**：桌面版注册为 Windows 默认浏览器候选
 
@@ -71,6 +76,7 @@
 
 ```
 ├── index.html                  # 网页版（在线使用，GitHub Pages 部署）
+├── game-portal2.0.html          # 🧭 内置封面导航网站（触控/跳转已修复）
 ├── html/                       # 单文件 HTML 版本
 │   └── 极光浏览器-网页版（移动端适配）.html
 ├── desktop/                    # Electron 桌面版源码
@@ -93,6 +99,13 @@
 ---
 
 ## 📝 更新日志
+
+### v7.2（隐私浏览 · 标签个性化 · 封面修复 · 下载链路升级）
+- 🕶️ **隐私浏览（无痕）**：`Ctrl+Shift+P` 或菜单/设置一键开启，历史、书签、设置均不落盘，顶部显示隐私徽标，关闭即恢复（Chrome 无痕同款）
+- 🎨 **标签页自定义**：右键标签 →「自定义标签外观」，10 种标签颜色 + 5 种动态效果（呼吸/流光/脉冲/光晕/闪耀），每个标签独立设置、一键恢复默认
+- 🛠️ **封面网站修复**（game-portal2.0.html）：补全 `showIsland` 灵动岛提示（此前只调用未定义，切换分类/收藏无反馈）；左右滑分类手势 `closest` 容错（触控快速滑动不再报错）；外链打开被嵌套 iframe 拦截时自动降级为 `postMessage` 在浏览器内部标签打开；`vibrate` 安全封装
+- ⬇️ **下载链路升级**：网页版「下载桌面版」改为从 GitHub Release 稳定链接获取 EXE（`releases/latest/download`），任何电脑（Windows/macOS）打开网页即可下载，不再依赖同目录文件；EXE 作为 Release 资产入库、不进 git 仓库（仓库体积不膨胀）
+- 🖥️ **EXE 重建**：基于 V7.2 全新构建，含上述全部修复与隐私功能
 
 ### v7.1.1（真实功能修复 · 触控/滚动/溢出）
 - 🛠️ **横向溢出修复**：工具栏 flex 收缩修复（`min-width:0`），手机/平板窄屏不再横向溢出、不再出现文字被截断/撑破
