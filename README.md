@@ -92,6 +92,8 @@
 │   ├── v6-封面页-改造前.html
 │   └── v6-桌面版-main.js
 ├── scripts/                    # 构建/生成脚本
+├── evidence/                   # 📜 创作历程记录（原创声明）
+├── THIRD-PARTY-LICENSES.txt    # 第三方依赖许可证清单
 ├── README.md
 └── LICENSE                     # MIT License
 ```
@@ -99,6 +101,16 @@
 ---
 
 ## 📝 更新日志
+
+### v7.2.1（安全加固 · 版权合规 · 里程碑 v1.0）
+- 🔐 **依赖锁定**：`electron@33.4.11`、`electron-builder@25.1.8` 精确版本（移除 `^`/`~`），`package-lock.json` 已提交
+- 🛡️ **自动安全扫描**：GitHub Actions（`.github/workflows/security.yml`）每次 push/PR 自动运行 `npm audit` + CodeQL 代码扫描 + CycloneDX SBOM 生成（`sbom.json`）；CI 最小权限 `contents: read`
+- 🚫 **防依赖投毒**：`.npmrc` 设 `ignore-scripts=true`（Electron 安装需单独执行 `node node_modules/electron/install.js` 补二进制）
+- ⚖️ **许可证合规**：`THIRD-PARTY-LICENSES.txt` 列出全部 340 个依赖及其许可证（无 UNKNOWN/UNLICENSED，无 GPL 强 Copyleft，全为 MIT/ISC/Apache-2.0/BSD 等宽松协议）
+- 🧭 **站点版权审查**：内置 201 站全部为正版无争议站点（游戏/工具/AI/主流平台/教育），无盗版/破解/VIP 解析站；favicon 为运行时实时抓取（不本地存储他人图标）
+- 📥 **下载面板升级**：新增 Windows / macOS 双下载入口（均指向 GitHub Release）+ 常见问题（SmartScreen / macOS 拦截指引）
+- 🏷️ **里程碑**：发布 `v1.0` 里程碑标签（首个公开版本）
+- 📜 **原创声明**：新增 `evidence/README.md` 创作历程记录，README 末尾附 Copyright 版权声明
 
 ### v7.2（隐私浏览 · 标签个性化 · 封面修复 · 下载链路升级）
 - 🕶️ **隐私浏览（无痕）**：`Ctrl+Shift+P` 或菜单/设置一键开启，历史、书签、设置均不落盘，顶部显示隐私徽标，关闭即恢复（Chrome 无痕同款）
