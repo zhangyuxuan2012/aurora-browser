@@ -1,7 +1,22 @@
 # 🌌 极光浏览器（Aurora Browser）
 
-> **纯净 · 高度自定义 · 防弹窗** —— 一个网页版与桌面版通用的极简浏览器。
+> **纯净 · 高度自定义 · 防弹窗** —— 网页版与桌面版通用的极简浏览器（浏览器 / 浏览器导航 / 单文件 HTML 浏览器）。
 > 基于真实 Chromium（Electron）内核，支持安装 Chrome 插件、导入其他浏览器书签、设为默认浏览器，Windows / macOS 双平台。
+
+**在线体验**：https://zhangyuxuan2012.github.io/zhangyuxuan/
+
+---
+
+## ⬇️ 下载中心
+
+| 版本 | 文件 | 获取方式 |
+| --- | --- | --- |
+| **网页版（在线使用，含移动端适配）** | 单文件 HTML（1.3MB） | 直接打开在线体验链接，或从 `html/` 下载 |
+| **完整版（单文件内嵌 EXE）** | `AuroraBrowser-Web-v7.0.0.html`（95.8MB） | [GitHub Release 下载](https://github.com/zhangyuxuan2012/aurora-browser/releases/latest/download/AuroraBrowser-Web-v7.0.0.html) |
+| **桌面版 EXE（绿色免安装）** | `AuroraBrowser-Portable-v7.0.0.exe`（74.4MB） | [GitHub Release 下载](https://github.com/zhangyuxuan2012/aurora-browser/releases/latest/download/AuroraBrowser-Portable-v7.0.0.exe) |
+| **历史版本** | v6 各版本 HTML / JS | `history/` 目录 |
+
+> Release 页面：https://github.com/zhangyuxuan2012/aurora-browser/releases
 
 ---
 
@@ -9,7 +24,7 @@
 
 极光浏览器是一款**单文件 HTML + Electron 桌面版**双形态浏览器：
 
-- **网页版（HTML）**：打开即用，无需安装任何环境；可一键下载桌面版 EXE。
+- **网页版（HTML）**：打开即用，无需安装任何环境；支持移动端触控适配；可一键下载桌面版 EXE。
 - **桌面版（EXE）**：基于真实 Chromium（Electron）内核，无内嵌网页"拒绝访问"限制，功能完整，流畅稳定。
 
 它主打三个方向：
@@ -24,11 +39,11 @@
 
 ## 🚀 快速使用
 
-### 网页版
-打开部署后的网页（GitHub Pages）即可直接使用，无需安装任何东西。
+### 网页版 / 移动版
+打开 https://zhangyuxuan2012.github.io/zhangyuxuan/ 即可直接使用，电脑手机通用，无需安装任何东西。
 
 ### 桌面版（Windows EXE）
-- 下载 `极光浏览器-桌面版EXE-绿色免安装-7.0.0.exe`（绿色免安装，双击即用）
+- 下载 `AuroraBrowser-Portable-v7.0.0.exe`（绿色免安装，双击即用）
 - 可选：设置 → 设为默认浏览器（Windows 默认应用列表中选择「极光浏览器」）
 - 支持加载真实 Chrome 插件（解压后的扩展目录）
 
@@ -52,6 +67,31 @@
 
 ---
 
+## 📂 项目结构
+
+```
+├── index.html                  # 网页版（在线使用，GitHub Pages 部署）
+├── html/                       # 单文件 HTML 版本
+│   └── 极光浏览器-网页版（移动端适配）.html
+├── desktop/                    # Electron 桌面版源码
+│   ├── main.js                 # 主进程（默认浏览器/插件/导入/崩溃恢复）
+│   ├── preload.js              # 上下文隔离桥接（安全 API）
+│   ├── index.html              # 桌面版加载的页面（与网页版同源）
+│   └── build/                  # 图标资源
+├── history/                    # 📜 历史版本及介绍
+│   ├── HISTORY.md              # 版本演进记录
+│   ├── v6-张雨轩浏览器导航_最终版.html
+│   ├── v6-轻量版.html
+│   ├── v6-封面页-游戏门户.html
+│   ├── v6-封面页-改造前.html
+│   └── v6-桌面版-main.js
+├── scripts/                    # 构建/生成脚本
+├── README.md
+└── LICENSE                     # MIT License
+```
+
+---
+
 ## 🛠️ 从源码构建（桌面版）
 
 ```bash
@@ -60,19 +100,6 @@ npm install
 npm start            # 本地运行
 npm run dist:win     # 构建 Windows 便携版 EXE
 npm run dist:mac     # 在 macOS 上构建 dmg/zip
-```
-
-### 项目结构
-```
-├── index.html                  # 网页版（轻量版，GitHub Pages 直接使用）
-├── desktop/                    # Electron 桌面版源码
-│   ├── main.js                 # 主进程（默认浏览器/插件/导入/崩溃恢复）
-│   ├── preload.js              # 上下文隔离桥接（安全 API）
-│   ├── index.html              # 桌面版加载的页面（与网页版同源）
-│   └── build/                  # 图标资源
-├── html/                       # 单文件 HTML 各版本
-├── scripts/                    # 构建/生成脚本
-└── _docs/                      # 文档
 ```
 
 ---
