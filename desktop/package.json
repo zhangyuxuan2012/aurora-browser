@@ -1,58 +1,61 @@
 {
-  "name": "aurora-browser",
-  "productName": "极光浏览器",
-  "version": "7.0.0",
-  "description": "极光浏览器 V7.0 —— 纯净 · 高度自定义 · 防弹窗。基于 Chromium（Electron）内核的绿色浏览器，支持安装 Chrome 插件、导入其他浏览器书签、设为默认浏览器，Windows / macOS 双平台。",
-  "main": "main.js",
-  "author": "张雨轩 <zhangyuxuan2012091@qq.com>",
-  "license": "MIT",
-  "homepage": "https://github.com/zhangyuxuan2012/aurora-browser",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/zhangyuxuan2012/aurora-browser.git"
-  },
-  "scripts": {
-    "start": "electron .",
-    "dist:win": "electron-builder --win portable",
-    "dist:mac": "electron-builder --mac dmg zip",
-    "dist": "electron-builder --win portable"
-  },
-  "devDependencies": {
-    "electron": "^33.2.0",
-    "electron-builder": "^25.1.8"
-  },
-  "build": {
-    "appId": "com.aurora.browser",
-    "productName": "极光浏览器",
-    "directories": {
-      "output": "dist"
-    },
-    "files": [
-      "main.js",
-      "index.html",
-      "preload.js",
-      "package.json"
-    ],
-    "win": {
-      "target": [
-        "portable"
-      ],
-      "icon": "build/icon.ico"
-    },
-    "mac": {
-      "target": [
-        "dmg",
-        "zip"
-      ],
-      "icon": "build/icon.icns",
-      "category": "public.app-category.productivity"
-    },
-    "portable": {
-      "artifactName": "极光浏览器-桌面版EXE-绿色免安装-${version}.${ext}"
-    },
-    "dmg": {
-      "artifactName": "极光浏览器-桌面版-${version}.${ext}"
-    },
-    "npmRebuild": false
-  }
+    "name":  "aurora-browser",
+    "productName":  "极光浏览器",
+    "version":  "7.0.0",
+    "description":  "极光浏览器 V7.0 —— 纯净 · 高度自定义 · 防弹窗。基于 Chromium（Electron）内核的绿色浏览器，支持安装 Chrome 插件、导入其他浏览器书签、设为默认浏览器，Windows / macOS 双平台。",
+    "main":  "main.js",
+    "author":  "张雨轩 \u003czhangyuxuan2012091@qq.com\u003e",
+    "license":  "MIT",
+    "homepage":  "https://github.com/zhangyuxuan2012/aurora-browser",
+    "repository":  {
+                       "type":  "git",
+                       "url":  "https://github.com/zhangyuxuan2012/aurora-browser.git"
+                   },
+    "scripts":  {
+                    "start":  "electron .",
+                    "dist:win":  "electron-builder --win portable",
+                    "dist:mac":  "electron-builder --mac dmg zip",
+                    "dist":  "electron-builder --win portable",
+                    "audit":  "npm audit --audit-level=high",
+                    "sbom":  "npx @cyclonedx/cyclonedx-npm --output-file sbom.json"
+                },
+    "devDependencies":  {
+                            "electron":  "33.4.11",
+                            "electron-builder":  "25.1.8"
+                        },
+    "build":  {
+                  "appId":  "com.aurora.browser",
+                  "productName":  "极光浏览器",
+                  "directories":  {
+                                      "output":  "dist"
+                                  },
+                  "files":  [
+                                "main.js",
+                                "index.html",
+                                "preload.js",
+                                "package.json",
+                                "build/icon.png"
+                            ],
+                  "win":  {
+                              "target":  [
+                                             "portable"
+                                         ],
+                              "icon":  "build/icon.ico"
+                          },
+                  "mac":  {
+                              "target":  [
+                                             "dmg",
+                                             "zip"
+                                         ],
+                              "icon":  "build/icon.icns",
+                              "category":  "public.app-category.productivity"
+                          },
+                  "portable":  {
+                                   "artifactName":  "极光浏览器-桌面版EXE-绿色免安装-${version}.${ext}"
+                               },
+                  "dmg":  {
+                              "artifactName":  "极光浏览器-桌面版-${version}.${ext}"
+                          },
+                  "npmRebuild":  false
+              }
 }
