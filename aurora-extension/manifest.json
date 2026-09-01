@@ -3,7 +3,6 @@
   "name": "极光快导",
   "version": "1.0.0",
   "description": "纯净防弹窗 + 201站导航 + 分屏侧边栏 + 隐私保护，极光浏览器核心功能扩展版。可安装到 Chrome / Edge / 360 / Brave 等 Chromium 内核浏览器。",
-  "default_locale": "zh_CN",
   "permissions": [
     "storage",
     "browsingData",
@@ -35,8 +34,12 @@
   },
   "content_scripts": [
     {
-      "matches": ["<all_urls>"],
-      "js": ["content.js"],
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "content.js"
+      ],
       "run_at": "document_start",
       "all_frames": true
     }
@@ -46,8 +49,15 @@
   },
   "web_accessible_resources": [
     {
-      "resources": ["popup.html", "popup.css", "sidepanel.html", "sidepanel.css"],
-      "matches": ["<all_urls>"]
+      "resources": [
+        "popup.html",
+        "popup.css",
+        "sidepanel.html",
+        "sidepanel.css"
+      ],
+      "matches": [
+        "<all_urls>"
+      ]
     }
   ]
 }
