@@ -8296,8 +8296,8 @@ body.mini-dragging { cursor: ns-resize !important; user-select: none !important;
 
   // 5.5 书签/历史面板同步渲染入口（导入后刷新）
   window.AuroraImport.refreshPanels = function () {
-    try { if (typeof renderBookmarksList === 'function') renderBookmarksList(); } catch (e) {}
-    try { if (typeof updateBookmarksPanel === 'function') updateBookmarksPanel(); } catch (e) {}
+    try { if (typeof renderBookmarks === 'function') renderBookmarks(); } catch (e) {}
+    try { if (typeof renderHistory === 'function') renderHistory(); } catch (e) {}
   };
   /* ==================== V7.2 隐私浏览 + 标签页个性化 ==================== */
   window.__PRIVACY__ = false;
