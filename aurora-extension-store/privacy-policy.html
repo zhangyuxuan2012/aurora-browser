@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>极光快导 - 隐私政策</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif; max-width: 800px; margin: 0 auto; padding: 40px 20px; line-height: 1.8; color: #333; background: #f9f9f9; }
+    h1 { color: #1a1a2e; border-bottom: 2px solid #5b8def; padding-bottom: 10px; }
+    h2 { color: #16213e; margin-top: 30px; }
+    .highlight { background: #e8f0fe; padding: 15px; border-radius: 8px; border-left: 4px solid #5b8def; }
+    ul { padding-left: 20px; }
+    li { margin-bottom: 8px; }
+    .footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid #ddd; color: #666; font-size: 14px; }
+  </style>
+</head>
+<body>
+  <h1>极光快导 隐私政策</h1>
+  <p><strong>最后更新日期：2026年9月1日</strong></p>
+
+  <div class="highlight">
+    <strong>核心承诺：极光快导不收集、不存储、不上传任何用户个人数据。</strong>
+    所有功能均在用户本地浏览器中完成，不经过任何第三方服务器。
+  </div>
+
+  <h2>一、我们收集什么数据？</h2>
+  <p><strong>答案：什么都不收集。</strong></p>
+  <ul>
+    <li>不收集浏览历史</li>
+    <li>不收集书签和收藏</li>
+    <li>不收集搜索关键词</li>
+    <li>不收集表单数据</li>
+    <li>不收集 Cookie</li>
+    <li>不收集用户地理位置</li>
+    <li>不收集设备信息</li>
+    <li>不包含任何追踪脚本（Google Analytics、百度统计等）</li>
+  </ul>
+
+  <h2>二、本地存储说明</h2>
+  <p>极光快导使用浏览器提供的本地存储 API（chrome.storage.sync）保存以下设置，<strong>这些数据仅保存在用户自己的浏览器中，不会上传到任何服务器：</strong></p>
+  <ul>
+    <li><strong>防弹窗开关状态</strong>：用户是否开启防弹窗功能</li>
+    <li><strong>弹窗拦截计数</strong>：累计拦截了多少个弹窗（仅用于展示，可随时清除）</li>
+  </ul>
+  <p>用户可以通过浏览器的扩展管理页面清除这些数据，或直接卸载扩展。</p>
+
+  <h2>三、防弹窗功能说明</h2>
+  <p>防弹窗功能通过以下方式工作，<strong>所有判断均在本地完成：</strong></p>
+  <ul>
+    <li>重写 window.open 方法，拦截可疑弹窗</li>
+    <li>监控 iframe 创建，拦截广告 iframe</li>
+    <li>拦截已知广告域名的自动跳转</li>
+    <li>拦截判断基于内置的域名黑名单和行为特征，不涉及用户数据上传</li>
+  </ul>
+
+  <h2>四、清除浏览数据功能</h2>
+  <p>极光快导提供"一键清除浏览数据"功能，该功能：</p>
+  <ul>
+    <li>调用浏览器原生 API（chrome.browsingData.remove）</li>
+    <li>清除范围包括：缓存、Cookie、历史、下载记录、表单数据、密码、IndexedDB、localStorage、Service Worker</li>
+    <li>清除操作仅在用户主动点击确认后执行</li>
+    <li>清除过程不经过任何第三方服务器</li>
+  </ul>
+
+  <h2>五、权限说明</h2>
+  <p>极光快导申请以下浏览器权限，每个权限都有明确的用途：</p>
+  <ul>
+    <li><strong>storage</strong>：保存防弹窗开关和拦截计数（本地存储）</li>
+    <li><strong>browsingData</strong>：提供一键清除浏览数据功能</li>
+    <li><strong>tabs</strong>：在分屏导航中控制左屏标签页（刷新、后退、前进、打开网址）</li>
+    <li><strong>notifications</strong>：安装和功能操作时显示系统通知</li>
+    <li><strong>contextMenus</strong>：在右键菜单中添加极光快导功能入口</li>
+    <li><strong>scripting</strong>：注入防弹窗内容脚本到网页</li>
+    <li><strong>sidePanel</strong>：提供分屏侧边栏导航功能</li>
+    <li><strong>host_permissions: &lt;all_urls&gt;</strong>：防弹窗功能需要在所有网页上运行</li>
+  </ul>
+
+  <h2>六、数据安全</h2>
+  <ul>
+    <li>代码完全开源，任何人都可以审查：<a href="https://github.com/zhangyuxuan2012/aurora-browser">GitHub 仓库</a></li>
+    <li>不包含任何混淆或加密代码</li>
+    <li>不与任何第三方服务器通信</li>
+    <li>不包含任何广告 SDK 或追踪 SDK</li>
+  </ul>
+
+  <h2>七、联系我们</h2>
+  <p>如果您对本隐私政策有任何疑问，可以通过以下方式联系：</p>
+  <ul>
+    <li>GitHub Issues：<a href="https://github.com/zhangyuxuan2012/aurora-browser/issues">提交问题</a></li>
+    <li>项目主页：<a href="https://zhangyuxuan2012.github.io/zhangyuxuan/">极光浏览器</a></li>
+  </ul>
+
+  <div class="footer">
+    <p>Copyright (c) 2026 张雨轩. 本项目为本人独立创作，AI 工具仅作为编程辅助，本人为唯一作者。</p>
+    <p>本隐私政策如有更新，将在本页面公布。</p>
+  </div>
+</body>
+</html>
