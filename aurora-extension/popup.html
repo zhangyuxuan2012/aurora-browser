@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>极光快导</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="aurora-popup">
+    <!-- 头部 -->
+    <div class="aurora-header">
+      <div class="aurora-logo">🌌</div>
+      <div class="aurora-title">
+        <h1>极光快导</h1>
+        <span class="aurora-subtitle">纯净 · 防弹窗 · 201站导航</span>
+      </div>
+      <div class="aurora-version">v1.0.0</div>
+    </div>
+
+    <!-- 搜索框 -->
+    <div class="aurora-search">
+      <input type="text" id="searchInput" placeholder="搜索网站或输入网址..." autocomplete="off">
+      <button id="searchBtn">🔍</button>
+    </div>
+
+    <!-- 功能快捷栏 -->
+    <div class="aurora-quick-actions">
+      <button class="qa-btn" id="btn-blocker" title="防弹窗开关">
+        <span class="qa-icon">🛡️</span>
+        <span class="qa-label">防弹窗</span>
+        <span class="qa-status" id="blockerStatus">已开启</span>
+      </button>
+      <button class="qa-btn" id="btn-privacy" title="清除浏览数据">
+        <span class="qa-icon">🧹</span>
+        <span class="qa-label">清痕迹</span>
+      </button>
+      <button class="qa-btn" id="btn-incognito" title="打开无痕窗口">
+        <span class="qa-icon">🕵️</span>
+        <span class="qa-label">无痕窗</span>
+      </button>
+      <button class="qa-btn" id="btn-nav" title="打开完整导航">
+        <span class="qa-icon">📑</span>
+        <span class="qa-label">全导航</span>
+      </button>
+    </div>
+
+    <!-- 分类标签 -->
+    <div class="aurora-categories" id="categories">
+      <!-- 动态生成分类标签 -->
+    </div>
+
+    <!-- 网站列表 -->
+    <div class="aurora-sites" id="sitesList">
+      <!-- 动态生成网站卡片 -->
+    </div>
+
+    <!-- 底部 -->
+    <div class="aurora-footer">
+      <span id="blockedCount">已拦截 0 个弹窗</span>
+      <a href="https://github.com/zhangyuxuan2012/aurora-browser" target="_blank" class="footer-link">GitHub 开源</a>
+    </div>
+  </div>
+
+  <!-- 提示消息 -->
+  <div class="aurora-toast" id="toast"></div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

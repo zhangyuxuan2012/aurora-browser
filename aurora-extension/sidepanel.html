@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>极光快导 - 分屏导航</title>
+  <link rel="stylesheet" href="sidepanel.css">
+</head>
+<body>
+  <div class="side-nav">
+    <!-- 头部 -->
+    <div class="sn-header">
+      <div class="sn-logo">🌌</div>
+      <div class="sn-title">
+        <h2>极光导航</h2>
+        <span>分屏模式 · 左屏浏览右屏导航</span>
+      </div>
+    </div>
+
+    <!-- 搜索框 -->
+    <div class="sn-search">
+      <input type="text" id="searchInput" placeholder="搜索网站或输入网址..." autocomplete="off">
+    </div>
+
+    <!-- 分类标签 -->
+    <div class="sn-categories" id="categories">
+      <!-- 动态生成 -->
+    </div>
+
+    <!-- 网站列表 -->
+    <div class="sn-sites" id="sitesList">
+      <!-- 动态生成 -->
+    </div>
+
+    <!-- 底部功能栏 -->
+    <div class="sn-footer">
+      <button class="sn-fbtn" id="btn-refresh" title="刷新左屏页面">🔄 刷新</button>
+      <button class="sn-fbtn" id="btn-back" title="左屏后退">⬅️ 后退</button>
+      <button class="sn-fbtn" id="btn-forward" title="左屏前进">➡️ 前进</button>
+      <button class="sn-fbtn" id="btn-full" title="打开完整导航">🔗 全导航</button>
+    </div>
+
+    <!-- 拦截统计 -->
+    <div class="sn-stats" id="stats">
+      🛡️ 已拦截 <span id="blockedNum">0</span> 个弹窗
+    </div>
+  </div>
+
+  <script src="sidepanel.js"></script>
+</body>
+</html>
