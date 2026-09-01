@@ -6695,7 +6695,14 @@ function tryPollinationsFallback(query, callback) {
       });
     }
     saveFavs(favs);
-    return idx < 0; // 返回true表示新增收藏，false表示取消收藏
+    var added = idx < 0;
+    // 灵动岛提示：收藏成功/取消收藏
+    try {
+      if (typeof showIsland === 'function') {
+        showIsland(added ? '⭐ 已收藏「' + site.name + '」' : '💔 已取消收藏「' + site.name + '」', 1500);
+      }
+    } catch(e) {}
+    return added; // 返回true表示新增收藏，false表示取消收藏
   }
 
   function updateFavBadge() {

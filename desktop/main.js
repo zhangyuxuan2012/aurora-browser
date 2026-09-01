@@ -462,22 +462,44 @@ function createWindow() {
     webPreferences: WEB_PREFS
   });
 
-  // window.open（target=_blank / 无痕窗口）
-  mainWindow.webContents.setWindowOpenHandler(({ url }) => {
-    if (typeof url === 'string' && url.startsWith('file://')) {
-      const w = new BrowserWindow({ width: 1100, height: 760, autoHideMenuBar: true, webPreferences: WEB_PREFS });
+  // 在 EXE 内部打开外部链接的辅助函数（不再调用系统默认浏览器）
+  function openInternal(url) {
+    try {
+      const w = new BrowserWindow({
+        width: 1200, height: 800, minWidth: 800, minHeight: 600,
+        autoHideMenuBar: true, title: '极光浏览器',
+        icon: path.join(__dirname, 'build', 'icon.png'),
+        webPreferences: { webviewTag: true, nodeIntegration: false, contextIsolation: true, sandbox: true, spellcheck: false }
+      });
       w.loadURL(url);
+      // 子窗口的外链也在内部打开
+      w.webContents.setWindowOpenHandler(({ url: u }) => {
+        if (/^https?:/i.test(u) || u.startsWith('file://')) { openInternal(u); return { action: 'deny' }; }
+        return { action: 'deny' };
+      });
+      w.webContents.on('will-navigate', (e, u) => {
+        if (typeof u === 'string' && !u.startsWith('file://') && /^https?:/i.test(u)) {
+          // 允许子窗口内部导航（不拦截）
+        }
+      });
+    } catch (e) { console.error('[Aurora] openInternal error:', e); }
+  }
+
+  // window.open（target=_blank / 无痕窗口）—— 全部在 EXE 内部打开，不调用系统默认浏览器
+  mainWindow.webContents.setWindowOpenHandler(({ url }) => {
+    if (typeof url === 'string' && (url.startsWith('file://') || /^https?:/i.test(url))) {
+      openInternal(url);
       return { action: 'deny' };
     }
-    if (/^https?:/i.test(url) || /^mailto:/i.test(url)) shell.openExternal(url);
+    if (/^mailto:/i.test(url)) { try { shell.openExternal(url); } catch(e){} }
     return { action: 'deny' };
   });
 
-  // 禁止主窗口被导航离开本地应用
+  // 主窗口被导航离开本地应用时，在内部新窗口打开（不调用系统默认浏览器）
   mainWindow.webContents.on('will-navigate', (e, url) => {
-    if (typeof url === 'string' && !url.startsWith('file://')) {
+    if (typeof url === 'string' && !url.startsWith('file://') && /^https?:/i.test(url)) {
       e.preventDefault();
-      if (/^https?:/i.test(url)) shell.openExternal(url);
+      openInternal(url);
     }
   });
 
