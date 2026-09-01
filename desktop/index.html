@@ -1495,6 +1495,12 @@ body.theme-dark .se-option.active, body.theme-incognito .se-option.active { back
   top: 92px;
   right: 10px;
   width: 260px;
+  max-height: calc(100vh - 112px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
+  scrollbar-width: thin;
   background: var(--bg-toolbar);
   border: 1px solid var(--border);
   border-radius: var(--radius);
@@ -4131,7 +4137,7 @@ body.mini-dragging { cursor: ns-resize !important; user-select: none !important;
     // 万一出现也绝不提示“下载客户端”，改为外部浏览器打开兜底。
     if (IS_ELECTRON) {
       hideBlockedOverlay();
-      try { if (window.api && window.api.shell) window.api.shell.openExternal(url); } catch {}
+      try { if (window.auroraAPI && typeof window.auroraAPI.openExternal === 'function') window.auroraAPI.openExternal(url); } catch {}
       flashShortMsg('🌐 已用系统浏览器打开 ' + getDomain(url));
       return;
     }
@@ -6381,7 +6387,8 @@ body.mini-dragging { cursor: ns-resize !important; user-select: none !important;
       btn.addEventListener('click', () => $('#' + btn.dataset.close).classList.add('hidden'));
     });
     $$('#menu-dropdown .menu-item').forEach(item => {
-      item.addEventListener('click', () => handleMenuAction(item.dataset.action));
+      // 阻止冒泡：避免 document 的「点击外部关闭面板」误关刚打开的书签/历史/下载面板
+      item.addEventListener('click', (e) => { e.stopPropagation(); handleMenuAction(item.dataset.action); });
     });
     $$('#context-menu .menu-item').forEach(item => {
       item.addEventListener('click', () => {
@@ -6459,11 +6466,14 @@ body.mini-dragging { cursor: ns-resize !important; user-select: none !important;
       }
       const panels = [dom.bookmarksPanel, dom.historyPanel, dom.downloadsPanel];
       const triggers = [dom.bookmarksBtn, dom.historyBtn, dom.downloadsBtn];
-      panels.forEach((p, i) => {
-        if (!p.classList.contains('hidden') && !p.contains(e.target) && e.target !== triggers[i] && !triggers[i].contains(e.target)) {
-          p.classList.add('hidden');
-        }
-      });
+      // 点击来自三点菜单内部时，不关闭侧边面板（菜单项内已 stopPropagation，此处为双保险）
+      if (!dom.menuDropdown.contains(e.target)) {
+        panels.forEach((p, i) => {
+          if (!p.classList.contains('hidden') && !p.contains(e.target) && e.target !== triggers[i] && !triggers[i].contains(e.target)) {
+            p.classList.add('hidden');
+          }
+        });
+      }
     });
     // Find bar
     dom.findClose.addEventListener('click', () => toggleFindBar(false));

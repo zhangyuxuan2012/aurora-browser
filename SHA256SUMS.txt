@@ -1,5 +1,15 @@
-﻿SHA256 (极光浏览器-桌面版EXE-绿色免安装-7.0.0.exe) = 9A5A85E78BDCC00151061684D939F3E8FA050943CCA2B35D1FCC5030CD5D6702
-SHA256 (AuroraBrowser-Web-v7.0.0.html) = 47B5B88CB31FC67DEE9A7D973774BED35CA19BD98EBEB8CDA06E5A3AB5701EFE
-（生成时间：2026-09-01 08:23:45 UTC+8）
-说明：EXE 为绿色免安装单文件；Web 为内嵌完整版（含封面+EXE）。下载后请核对哈希以防篡改。
+﻿AuroraBrowser V7.2.2（修复版）SHA256 校验清单
+生成时间：2026-09-01 09:56:10 UTC+8
 
+=== Windows EXE（绿色免安装）===
+SHA256 (极光浏览器-桌面版EXE-绿色免安装-7.0.0.exe) = 4CECB736081CA1AEE7FEF8ED8C9B67863182318BE7EC030E4A6812B2DC7BDD5D
+下载: https://github.com/zhangyuxuan2012/aurora-browser/releases/latest/download/AuroraBrowser-Portable-v7.0.0.exe
+
+=== 完整版网页（内嵌封面+EXE）===
+SHA256 (极光浏览器-最终版.html) = B13EB3B1A5E9BDE4D2B57B67CC4E09A607E1A7DE6402FF89AD55F65C8D9648D1
+
+=== 网页版（浏览器主体）===
+SHA256 (index.html) = D51E3BF873758B5D99E81210165D0307CF61E96B1C17FD4A104ACFDB926233C0
+
+使用说明：下载后请将文件拖入 https://emn178.github.io/online-tools/sha256.html 或本地命令行核对哈希，
+与上方数值完全一致即表示文件未被篡改。
