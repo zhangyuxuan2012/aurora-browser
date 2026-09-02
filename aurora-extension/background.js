@@ -198,4 +198,17 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
     }
     return true;
   }
+  // 划词查询：打开侧栏并传递搜索词
+  if (message.type === "openSidebarSearch") {
+    try {
+      chrome.windows.getCurrent(function (win) {
+        openSidePanel(win.id);
+        chrome.storage.local.set({ aurora_pending_search: message.text || "" });
+      });
+      sendResponse({ ok: true });
+    } catch (e) {
+      sendResponse({ ok: false, error: e.message });
+    }
+    return true;
+  }
 });

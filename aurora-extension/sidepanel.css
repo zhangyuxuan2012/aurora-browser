@@ -362,3 +362,21 @@ body {
   color: #fff;
   font-weight: 600;
 }
+
+/* ===== v1.2.0 稍后阅读 ===== */
+.sn-later { margin: 10px 12px; padding: 10px; background: var(--bg2, #f5f5f5); border-radius: 10px; }
+.sn-later-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.sn-later-head span { font-size: 13px; font-weight: 600; color: var(--text, #333); }
+.sn-later-save { font-size: 11px; padding: 4px 10px; background: #1a73e8; color: #fff; border: none; border-radius: 6px; cursor: pointer; }
+.sn-later-save:hover { background: #1765cc; }
+.sn-later-list { max-height: 200px; overflow-y: auto; }
+.sn-later-empty { font-size: 12px; color: #999; display: block; padding: 8px 0; text-align: center; }
+.sn-later-item { background: #fff; border-radius: 8px; padding: 8px 10px; margin-bottom: 6px; border: 1px solid #e0e0e0; }
+.sn-later-title { font-size: 13px; font-weight: 500; color: #333; margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sn-later-meta { font-size: 11px; color: #999; margin-bottom: 6px; }
+.sn-later-actions { display: flex; gap: 6px; }
+.sn-later-open, .sn-later-del { font-size: 11px; padding: 3px 10px; border: none; border-radius: 5px; cursor: pointer; }
+.sn-later-open { background: #e8f0fe; color: #1a73e8; }
+.sn-later-open:hover { background: #d2e3fc; }
+.sn-later-del { background: #fce8e6; color: #ea4335; }
+.sn-later-del:hover { background: #fad2cf; }

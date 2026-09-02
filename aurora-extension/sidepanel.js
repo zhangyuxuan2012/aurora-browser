@@ -474,7 +474,94 @@ function escapeAttr(s) {
   return String(s).replace(/"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
 
-// 页面加载时渲染自定义网址
+// 页面加载时渲染自定义网址 + 稍后阅读
 document.addEventListener("DOMContentLoaded", function () {
   renderCustomSites();
+  renderLaterItems();
+  var saveBtn = document.getElementById("btn-later-save");
+  if (saveBtn) {
+    saveBtn.addEventListener("click", function () {
+      chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+        if (!tabs[0]) return;
+        chrome.tabs.sendMessage(tabs[0].id, { type: "saveForLater" }, function (resp) {
+          if (resp && resp.ok && resp.item) {
+            saveLaterItem(resp.item);
+            renderLaterItems();
+            if (typeof flashShortMsg === "function") flashShortMsg("已保存到稍后阅读");
+          }
+        });
+      });
+    });
+  }
 });
+
+// ========== 稍后阅读（v1.2.0） ==========
+var LATER_KEY = "aurora_later_items";
+function loadLaterItems(cb) {
+  try {
+    chrome.storage.local.get([LATER_KEY], function (result) { cb(result[LATER_KEY] || []); });
+  } catch (e) { cb([]); }
+}
+function saveLaterItem(item) {
+  loadLaterItems(function (list) {
+    if (list.some(function (i) { return i.url === item.url; })) return;
+    list.unshift(item);
+    if (list.length > 50) list = list.slice(0, 50);
+    var obj = {}; obj[LATER_KEY] = list;
+    chrome.storage.local.set(obj);
+  });
+}
+function deleteLaterItem(url) {
+  loadLaterItems(function (list) {
+    var filtered = list.filter(function (i) { return i.url !== url; });
+    var obj = {}; obj[LATER_KEY] = filtered;
+    chrome.storage.local.set(obj);
+    renderLaterItems();
+  });
+}
+function renderLaterItems() {
+  var listEl = document.getElementById("laterList");
+  if (!listEl) return;
+  loadLaterItems(function (list) {
+    if (!list || list.length === 0) {
+      listEl.innerHTML = '<span class="sn-later-empty">暂无保存的文章</span>';
+      return;
+    }
+    listEl.innerHTML = "";
+    list.forEach(function (item) {
+      var div = document.createElement("div");
+      div.className = "sn-later-item";
+      var timeStr = formatLaterTime(item.savedAt);
+      div.innerHTML =
+        '<div class="sn-later-title">' + escapeHtml(item.title) + '</div>' +
+        '<div class="sn-later-meta">' + timeStr + '</div>' +
+        '<div class="sn-later-actions">' +
+        '<button class="sn-later-open" data-url="' + escapeAttr(item.url) + '">打开</button>' +
+        '<button class="sn-later-del" data-url="' + escapeAttr(item.url) + '">删除</button>' +
+        '</div>';
+      listEl.appendChild(div);
+    });
+    listEl.querySelectorAll(".sn-later-open").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var url = this.getAttribute("data-url");
+        chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+          if (tabs[0]) chrome.tabs.update(tabs[0].id, { url: url });
+        });
+      });
+    });
+    listEl.querySelectorAll(".sn-later-del").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        deleteLaterItem(this.getAttribute("data-url"));
+      });
+    });
+  });
+}
+function formatLaterTime(ts) {
+  if (!ts) return "";
+  var d = new Date(ts);
+  var diff = (Date.now() - d) / 1000;
+  if (diff < 60) return "刚刚";
+  if (diff < 3600) return Math.floor(diff / 60) + "分钟前";
+  if (diff < 86400) return Math.floor(diff / 3600) + "小时前";
+  return (d.getMonth() + 1) + "/" + d.getDate();
+}
