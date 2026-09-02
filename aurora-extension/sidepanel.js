@@ -233,4 +233,248 @@ function bindEvents() {
   document.getElementById("btn-full").addEventListener("click", function () {
     openInLeftPanel("https://zhangyuxuan2012.github.io/zhangyuxuan/");
   });
+
+  // AI 一键总结
+  document.getElementById("btn-ai-summary").addEventListener("click", summarizePage);
+  document.getElementById("btn-ai-copy").addEventListener("click", copySummary);
+  document.getElementById("btn-ai-close").addEventListener("click", closeSummary);
+
+  // v1.1.0 新功能
+  document.getElementById("btn-reader").addEventListener("click", toggleReaderMode);
+  document.getElementById("btn-dark").addEventListener("click", toggleDarkMode);
+  document.getElementById("btn-screenshot").addEventListener("click", captureScreenshot);
+  document.getElementById("btn-custom-add").addEventListener("click", openCustomModal);
+  document.getElementById("btn-custom-add2").addEventListener("click", openCustomModal);
+  document.getElementById("btn-custom-cancel").addEventListener("click", closeCustomModal);
+  document.getElementById("btn-custom-save").addEventListener("click", saveCustomSite);
 }
+
+// ========== AI 一键总结（本地算法，不联网不上传） ==========
+function summarizePage() {
+  var btn = document.getElementById("btn-ai-summary");
+  var result = document.getElementById("aiResult");
+  var body = document.getElementById("aiResultBody");
+  var meta = document.getElementById("aiResultMeta");
+  btn.textContent = "⏳ 总结中…";
+  btn.disabled = true;
+
+  function done() {
+    btn.textContent = "✨ AI 总结本页";
+    btn.disabled = false;
+  }
+
+  chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+    if (!tabs[0]) {
+      body.textContent = "未找到当前标签页，请重新打开侧边栏后重试。";
+      result.style.display = "block";
+      done();
+      return;
+    }
+    chrome.tabs.sendMessage(tabs[0].id, { type: "getPageText" }, function (resp) {
+      if (chrome.runtime.lastError || !resp || !resp.ok) {
+        body.textContent = "无法读取当前页面内容。若页面在扩展安装前已打开，请刷新页面后重试。";
+        result.style.display = "block";
+        done();
+        return;
+      }
+      var text = resp.text || "";
+      if (text.length < 30) {
+        body.textContent = "当前页面内容过短，无法生成摘要。";
+        meta.textContent = "";
+        result.style.display = "block";
+        done();
+        return;
+      }
+      var res = AuroraSummary.extractSummary(text, 6);
+      body.textContent = res.summary || "未能提取到有效内容。";
+      meta.textContent = "从 " + res.total + " 句中提取 " + res.sentences.length + " 个核心要点 · 本地计算不上传";
+      result.style.display = "block";
+      done();
+    });
+  });
+}
+
+function copySummary() {
+  var body = document.getElementById("aiResultBody");
+  var text = body.textContent || "";
+  if (!text) return;
+  var ta = document.createElement("textarea");
+  ta.value = text;
+  document.body.appendChild(ta);
+  ta.select();
+  try { document.execCommand("copy"); } catch (e) {}
+  document.body.removeChild(ta);
+  var btn = document.getElementById("btn-ai-copy");
+  btn.textContent = "✅ 已复制";
+  setTimeout(function () { btn.textContent = "📋 复制"; }, 1500);
+}
+
+function closeSummary() {
+  document.getElementById("aiResult").style.display = "none";
+}
+
+// ========== v1.1.0 新功能 ==========
+
+// 获取当前活动标签页
+function getActiveTab(cb) {
+  chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+    cb(tabs && tabs[0] ? tabs[0] : null);
+  });
+}
+
+// 阅读模式
+function toggleReaderMode() {
+  getActiveTab(function (tab) {
+    if (!tab) { showToast("未找到当前标签页"); return; }
+    chrome.tabs.sendMessage(tab.id, { type: "readerMode" }, function (resp) {
+      if (chrome.runtime.lastError) {
+        showToast("请刷新页面后再试");
+      } else {
+        showToast("📖 阅读模式已切换");
+      }
+    });
+  });
+}
+
+// 暗黑模式
+function toggleDarkMode() {
+  var btn = document.getElementById("btn-dark");
+  getActiveTab(function (tab) {
+    if (!tab) { showToast("未找到当前标签页"); return; }
+    chrome.tabs.sendMessage(tab.id, { type: "darkModeToggle" }, function (resp) {
+      if (chrome.runtime.lastError) {
+        showToast("请刷新页面后再试");
+      } else if (resp && resp.ok) {
+        btn.textContent = resp.enabled ? "☀️ 亮色" : "🌙 暗黑";
+        showToast(resp.enabled ? "🌙 暗黑模式已开启" : "☀️ 已恢复亮色");
+      }
+    });
+  });
+}
+
+// 网页截图
+function captureScreenshot() {
+  var btn = document.getElementById("btn-screenshot");
+  btn.textContent = "⏳ 截图中…";
+  btn.disabled = true;
+  chrome.runtime.sendMessage({ type: "captureScreenshot" }, function (resp) {
+    btn.textContent = "📷 截图";
+    btn.disabled = false;
+    if (resp && resp.ok) {
+      showToast("📷 截图已下载：" + (resp.filename || ""));
+    } else {
+      showToast("截图失败：" + ((resp && resp.error) || "未知错误"));
+    }
+  });
+}
+
+// 轻提示
+function showToast(msg) {
+  var toast = document.getElementById("toast");
+  if (!toast) {
+    toast = document.createElement("div");
+    toast.id = "toast";
+    toast.style.cssText = "position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:rgba(20,20,40,0.95);color:#fff;padding:10px 20px;border-radius:10px;font-size:12px;z-index:99999;box-shadow:0 4px 20px rgba(0,0,0,0.3);max-width:280px;text-align:center;";
+    document.body.appendChild(toast);
+  }
+  toast.textContent = msg;
+  toast.style.display = "block";
+  clearTimeout(toast._timer);
+  toast._timer = setTimeout(function () { toast.style.display = "none"; }, 2200);
+}
+
+// ========== 自定义快捷网址 ==========
+var CUSTOM_KEY = "customSites";
+
+function loadCustomSites(cb) {
+  chrome.storage.sync.get([CUSTOM_KEY], function (result) {
+    cb(result[CUSTOM_KEY] || []);
+  });
+}
+
+function saveCustomSites(list, cb) {
+  var obj = {};
+  obj[CUSTOM_KEY] = list;
+  chrome.storage.sync.set(obj, function () { cb && cb(); });
+}
+
+function renderCustomSites() {
+  loadCustomSites(function (list) {
+    var container = document.getElementById("customList");
+    if (!container) return;
+    if (!list.length) {
+      container.innerHTML = '<span class="sn-custom-empty">暂无自定义网址，点击"添加"创建</span>';
+      return;
+    }
+    container.innerHTML = "";
+    list.forEach(function (site, idx) {
+      var item = document.createElement("div");
+      item.className = "sn-custom-item";
+      item.innerHTML =
+        '<a class="sn-custom-link" href="' + escapeAttr(site.url) + '" target="_blank" title="' + escapeAttr(site.name) + '">' + escapeHtml(site.name) + '</a>' +
+        '<button class="sn-custom-del" data-idx="' + idx + '" title="删除">✕</button>';
+      container.appendChild(item);
+    });
+    // 绑定删除
+    container.querySelectorAll(".sn-custom-del").forEach(function (btn) {
+      btn.addEventListener("click", function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        var idx = parseInt(btn.getAttribute("data-idx"), 10);
+        deleteCustomSite(idx);
+      });
+    });
+  });
+}
+
+function openCustomModal() {
+  document.getElementById("customName").value = "";
+  document.getElementById("customUrl").value = "";
+  document.getElementById("customModal").style.display = "flex";
+  document.getElementById("customName").focus();
+}
+
+function closeCustomModal() {
+  document.getElementById("customModal").style.display = "none";
+}
+
+function saveCustomSite() {
+  var name = document.getElementById("customName").value.trim();
+  var url = document.getElementById("customUrl").value.trim();
+  if (!name || !url) { showToast("请填写名称和网址"); return; }
+  if (!/^https?:\/\//i.test(url)) { url = "https://" + url; }
+  loadCustomSites(function (list) {
+    list.push({ name: name, url: url });
+    saveCustomSites(list, function () {
+      renderCustomSites();
+      closeCustomModal();
+      showToast("✅ 已添加：" + name);
+    });
+  });
+}
+
+function deleteCustomSite(idx) {
+  loadCustomSites(function (list) {
+    if (idx < 0 || idx >= list.length) return;
+    var name = list[idx].name;
+    list.splice(idx, 1);
+    saveCustomSites(list, function () {
+      renderCustomSites();
+      showToast("已删除：" + name);
+    });
+  });
+}
+
+function escapeHtml(s) {
+  var d = document.createElement("div");
+  d.textContent = s;
+  return d.innerHTML;
+}
+function escapeAttr(s) {
+  return String(s).replace(/"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+// 页面加载时渲染自定义网址
+document.addEventListener("DOMContentLoaded", function () {
+  renderCustomSites();
+});

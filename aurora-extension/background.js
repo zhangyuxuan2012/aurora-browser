@@ -172,3 +172,30 @@ chrome.commands && chrome.commands.onCommand.addListener(function (command) {
     });
   }
 });
+
+// ========== 网页截图（v1.1.0） ==========
+chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
+  if (message.type === "captureScreenshot") {
+    try {
+      chrome.tabs.captureVisibleTab(null, { format: "png" }, function (dataUrl) {
+        if (chrome.runtime.lastError || !dataUrl) {
+          sendResponse({ ok: false, error: (chrome.runtime.lastError && chrome.runtime.lastError.message) || "截图失败" });
+          return;
+        }
+        var ts = new Date();
+        var pad = function(n){return n<10?"0"+n:n;};
+        var filename = "极光快导截图_" + ts.getFullYear() + pad(ts.getMonth()+1) + pad(ts.getDate()) + "_" + pad(ts.getHours()) + pad(ts.getMinutes()) + pad(ts.getSeconds()) + ".png";
+        chrome.downloads.download({ url: dataUrl, filename: filename, saveAs: false }, function (downloadId) {
+          if (chrome.runtime.lastError) {
+            sendResponse({ ok: false, error: chrome.runtime.lastError.message });
+          } else {
+            sendResponse({ ok: true, downloadId: downloadId, filename: filename });
+          }
+        });
+      });
+    } catch (e) {
+      sendResponse({ ok: false, error: e.message });
+    }
+    return true;
+  }
+});

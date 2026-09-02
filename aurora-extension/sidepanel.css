@@ -214,3 +214,151 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(255,255,255,0.25);
 }
+
+/* ===== AI 一键总结 ===== */
+.sn-ai { margin: 8px 8px 0; }
+.sn-ai-btn { width: 100%; background: linear-gradient(135deg, #6c5ce7, #a29bfe); color: #fff; border: none; border-radius: 10px; padding: 9px 0; font-size: 12px; cursor: pointer; font-weight: 600; }
+.sn-ai-btn:hover { opacity: 0.9; }
+.sn-ai-btn:disabled { opacity: 0.6; cursor: wait; }
+.sn-ai-result { background: rgba(108, 92, 231, 0.08); border: 1px solid rgba(108, 92, 231, 0.3); border-radius: 10px; padding: 10px; margin-top: 8px; }
+.sn-ai-head { font-size: 12px; font-weight: 700; color: #6c5ce7; margin-bottom: 6px; }
+.sn-ai-body { font-size: 12px; color: #334; line-height: 1.6; max-height: 180px; overflow-y: auto; white-space: pre-wrap; word-break: break-word; }
+.sn-ai-meta { font-size: 10px; color: #889; margin-top: 6px; }
+.sn-ai-actions { display: flex; gap: 6px; margin-top: 8px; }
+.sn-ai-small { flex: 1; background: #eee; border: none; border-radius: 6px; padding: 5px 0; font-size: 11px; cursor: pointer; }
+.sn-ai-small:hover { background: #ddd; }
+
+/* ===== v1.1.0 工具行 ===== */
+.sn-footer-tools {
+  border-top: 1px solid rgba(255,255,255,0.08);
+  padding-top: 6px;
+}
+.sn-footer-tools .sn-fbtn {
+  font-size: 11px;
+  padding: 7px 0;
+}
+
+/* ===== 自定义快捷网址 ===== */
+.sn-custom {
+  margin: 8px;
+  background: rgba(255,255,255,0.04);
+  border-radius: 10px;
+  padding: 8px 10px;
+}
+.sn-custom-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #ccc;
+}
+.sn-custom-add {
+  background: rgba(108,92,231,0.2);
+  color: #a29bfe;
+  border: none;
+  border-radius: 6px;
+  padding: 3px 10px;
+  font-size: 11px;
+  cursor: pointer;
+}
+.sn-custom-add:hover { background: rgba(108,92,231,0.35); }
+.sn-custom-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.sn-custom-empty {
+  font-size: 11px;
+  color: #777;
+  padding: 4px 0;
+}
+.sn-custom-item {
+  display: flex;
+  align-items: center;
+  background: rgba(255,255,255,0.06);
+  border-radius: 6px;
+  overflow: hidden;
+}
+.sn-custom-link {
+  color: #ddd;
+  text-decoration: none;
+  font-size: 11px;
+  padding: 5px 8px;
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.sn-custom-link:hover { color: #a29bfe; }
+.sn-custom-del {
+  background: transparent;
+  border: none;
+  color: #888;
+  font-size: 10px;
+  padding: 4px 6px;
+  cursor: pointer;
+}
+.sn-custom-del:hover { color: #ff6b6b; }
+
+/* ===== 自定义网址弹窗 ===== */
+.sn-custom-modal {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 99999;
+}
+.sn-custom-modal-box {
+  background: #1e1e2e;
+  border-radius: 12px;
+  padding: 16px;
+  width: 260px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+}
+.sn-custom-modal-box h4 {
+  margin: 0 0 12px;
+  font-size: 14px;
+  color: #eee;
+}
+.sn-custom-modal-box input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 8px 10px;
+  margin-bottom: 8px;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 8px;
+  background: rgba(255,255,255,0.05);
+  color: #eee;
+  font-size: 12px;
+}
+.sn-custom-modal-box input:focus {
+  outline: none;
+  border-color: #6c5ce7;
+}
+.sn-custom-modal-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+.sn-custom-modal-actions button {
+  flex: 1;
+  padding: 8px 0;
+  border: none;
+  border-radius: 8px;
+  font-size: 12px;
+  cursor: pointer;
+}
+#btn-custom-cancel {
+  background: rgba(255,255,255,0.1);
+  color: #ccc;
+}
+#btn-custom-save {
+  background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+  color: #fff;
+  font-weight: 600;
+}

@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "极光快导",
-  "version": "1.0.0",
-  "description": "纯净防弹窗 + 201站导航 + 分屏侧边栏 + 隐私保护，极光浏览器核心功能扩展版。可安装到 Chrome / Edge / 360 / Brave 等 Chromium 内核浏览器。",
+  "version": "1.1.0",
+  "description": "纯净防弹窗 + 201站导航 + 分屏侧边栏 + 隐私保护，极光浏览器核心功能扩展版。可安装到 Chrome / Edge / 360 / Brave 等 Chromium 内核浏览器。 内置一键 AI 总结：本地算法提炼长文本核心要点，不联网、不上传、免费。 v1.1.0新增：阅读模式（去广告纯净阅读）、暗黑模式、网页截图、自定义快捷网址。",
   "permissions": [
     "storage",
     "browsingData",
@@ -10,7 +10,8 @@
     "notifications",
     "contextMenus",
     "scripting",
-    "sidePanel"
+    "sidePanel",
+    "downloads"
   ],
   "host_permissions": [
     "<all_urls>"

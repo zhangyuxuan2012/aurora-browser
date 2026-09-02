@@ -39,6 +39,51 @@
       <button class="sn-fbtn" id="btn-forward" title="左屏前进">➡️ 前进</button>
       <button class="sn-fbtn" id="btn-full" title="打开完整导航">🔗 全导航</button>
     </div>
+    <!-- 工具行（v1.1.0） -->
+    <div class="sn-footer sn-footer-tools">
+      <button class="sn-fbtn" id="btn-reader" title="阅读模式：去广告纯净阅读">📖 阅读</button>
+      <button class="sn-fbtn" id="btn-dark" title="暗黑模式切换">🌙 暗黑</button>
+      <button class="sn-fbtn" id="btn-screenshot" title="截取当前页面并下载">📷 截图</button>
+      <button class="sn-fbtn" id="btn-custom-add" title="添加自定义快捷网址">➕ 自定义</button>
+    </div>
+
+    <!-- AI 一键总结 -->
+    <div class="sn-ai">
+      <button class="sn-fbtn sn-ai-btn" id="btn-ai-summary" title="一键总结本页长文本核心要点">✨ AI 总结本页</button>
+      <div class="sn-ai-result" id="aiResult" style="display:none;">
+        <div class="sn-ai-head">📋 本页核心要点</div>
+        <div class="sn-ai-body" id="aiResultBody"></div>
+        <div class="sn-ai-meta" id="aiResultMeta"></div>
+        <div class="sn-ai-actions">
+          <button class="sn-ai-small" id="btn-ai-copy">📋 复制</button>
+          <button class="sn-ai-small" id="btn-ai-close">✕ 关闭</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 自定义快捷网址（v1.1.0） -->
+    <div class="sn-custom" id="customSection">
+      <div class="sn-custom-head">
+        <span>⭐ 我的快捷网址</span>
+        <button class="sn-custom-add" id="btn-custom-add2">➕ 添加</button>
+      </div>
+      <div class="sn-custom-list" id="customList">
+        <span class="sn-custom-empty">暂无自定义网址，点击"添加"创建</span>
+      </div>
+    </div>
+
+    <!-- 自定义网址弹窗 -->
+    <div class="sn-custom-modal" id="customModal" style="display:none;">
+      <div class="sn-custom-modal-box">
+        <h4>添加快捷网址</h4>
+        <input type="text" id="customName" placeholder="网站名称（如：知乎）" maxlength="20">
+        <input type="text" id="customUrl" placeholder="网址（如：https://zhihu.com）">
+        <div class="sn-custom-modal-actions">
+          <button id="btn-custom-cancel">取消</button>
+          <button id="btn-custom-save">保存</button>
+        </div>
+      </div>
+    </div>
 
     <!-- 拦截统计 -->
     <div class="sn-stats" id="stats">
@@ -46,6 +91,7 @@
     </div>
   </div>
 
+  <script src="ai_summary.js"></script>
   <script src="sidepanel.js"></script>
 </body>
 </html>

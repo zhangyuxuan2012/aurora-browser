@@ -2189,6 +2189,72 @@ body.mini-dragging { cursor: ns-resize !important; user-select: none !important;
 /* 修复设置面板滚轮：确保内部滚动容器可滚轮 */
 .settings-panel-body, .side-panel-body { overflow-y: auto !important; overscroll-behavior: contain; }
 
+
+/* ===== v7.1 实时时钟 ===== */
+.newtab-clock {
+  font-size: 44px;
+  font-weight: 200;
+  color: var(--text);
+  margin: 6px 0 2px;
+  letter-spacing: 3px;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+}
+.newtab-date {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-bottom: 18px;
+}
+/* ===== v7.1 自定义快捷网址 ===== */
+.quick-link { position: relative; }
+.quick-link-del {
+  position: absolute;
+  top: 2px; right: 4px;
+  width: 18px; height: 18px;
+  display: none;
+  align-items: center; justify-content: center;
+  font-size: 11px; color: var(--text-secondary);
+  cursor: pointer; border-radius: 50%;
+  background: var(--bg-toolbar);
+}
+.quick-link:hover .quick-link-del { display: flex; }
+.quick-link-del:hover { color: var(--danger); }
+.quick-link-add .quick-link-icon {
+  background: transparent !important;
+  border: 2px dashed var(--border);
+  color: var(--text-secondary);
+}
+.custom-link-modal {
+  position: fixed; top:0; left:0;
+  width:100%; height:100%;
+  background: rgba(0,0,0,0.5);
+  display: flex; align-items:center; justify-content:center;
+  z-index: 100000;
+}
+.custom-link-box {
+  background: var(--bg-toolbar);
+  border-radius: 12px;
+  padding: 20px;
+  width: 300px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+}
+.custom-link-box h4 {
+  margin: 0 0 14px; font-size: 15px; color: var(--text);
+}
+.custom-link-box input {
+  width: 100%; box-sizing: border-box;
+  padding: 9px 12px; margin-bottom: 10px;
+  border: 1px solid var(--border); border-radius: 8px;
+  background: var(--bg); color: var(--text); font-size: 13px;
+}
+.custom-link-box input:focus { outline: none; border-color: var(--accent); }
+.custom-link-actions { display: flex; gap: 10px; margin-top: 6px; }
+.custom-link-actions button {
+  flex: 1; padding: 9px 0; border: none; border-radius: 8px;
+  font-size: 13px; cursor: pointer;
+}
+#custom-link-cancel { background: var(--bg4); color: var(--text-secondary); }
+#custom-link-save { background: var(--accent); color: #fff; font-weight: 600; }
 </style>
 <script id="cover-html-data" type="text/plain"></script>
 </head>
@@ -2352,6 +2418,8 @@ body.mini-dragging { cursor: ns-resize !important; user-select: none !important;
     <div class="newtab-inner">
       <div class="newtab-logo">🚀</div>
       <h1 class="newtab-title">极光浏览器</h1>
+      <div class="newtab-clock" id="newtab-clock">--:--:--</div>
+      <div class="newtab-date" id="newtab-date"></div>
       <form id="newtab-search-form" class="newtab-search-form">
         <div class="search-engine-badge" id="newtab-search-engine-badge" title="切换搜索引擎">
           <span class="search-engine-icon">🔍</span>
@@ -2396,6 +2464,18 @@ body.mini-dragging { cursor: ns-resize !important; user-select: none !important;
         <button id="blocked-open-external" class="secondary-btn">在浏览器新标签打开</button>
         <button id="blocked-copy-url" class="secondary-btn">复制网址</button>
         <button id="blocked-go-back" class="secondary-btn">返回</button>
+      </div>
+    </div>
+  </div>
+  <!-- 自定义快捷网址弹窗（v7.1） -->
+  <div id="custom-link-modal" class="custom-link-modal" style="display:none;">
+    <div class="custom-link-box">
+      <h4>添加快捷网址</h4>
+      <input id="custom-link-name" type="text" placeholder="名称（如：知乎）" maxlength="12" autocomplete="off">
+      <input id="custom-link-url" type="text" placeholder="网址（如：https://zhihu.com）" autocomplete="off">
+      <div class="custom-link-actions">
+        <button id="custom-link-cancel">取消</button>
+        <button id="custom-link-save">保存</button>
       </div>
     </div>
   </div>
@@ -4171,10 +4251,19 @@ body.mini-dragging { cursor: ns-resize !important; user-select: none !important;
     }
   }
   /* ---------- New Tab Page ---------- */
+  const CUSTOM_LINKS_KEY = 'aurora_custom_links_v1';
+  function loadCustomLinks() {
+    try { return JSON.parse(localStorage.getItem(CUSTOM_LINKS_KEY)) || []; } catch (e) { return []; }
+  }
+  function saveCustomLinks(list) {
+    try { localStorage.setItem(CUSTOM_LINKS_KEY, JSON.stringify(list)); } catch (e) {}
+  }
   function renderQuickLinks() {
     dom.quickLinks.innerHTML = '';
-    // DNS-prefetch for quick link hosts (warm DNS for favicons & actual navigation)
-    QUICK_LINKS.forEach(l => {
+    const custom = loadCustomLinks().map(l => Object.assign({}, l, { custom: true }));
+    const all = QUICK_LINKS.concat(custom);
+    // DNS-prefetch for quick link hosts
+    all.forEach(l => {
       try {
         const host = new URL(l.url).hostname;
         if (host && !document.querySelector('link[dns-host="' + host + '"]')) {
@@ -4184,18 +4273,82 @@ body.mini-dragging { cursor: ns-resize !important; user-select: none !important;
           link.setAttribute('dns-host', host);
           document.head.appendChild(link);
         }
-      } catch {}
+      } catch (e) {}
     });
-    QUICK_LINKS.forEach(l => {
+    all.forEach(l => {
       const link = el('a', {
         class: 'quick-link', href: '#',
         onclick: (e) => { e.preventDefault(); navigateActive(l.url); }
       }, [
-        el('div', { class: 'quick-link-icon', style: 'background:' + l.color }, l.icon),
+        el('div', { class: 'quick-link-icon', style: 'background:' + (l.color || '#666') }, l.icon || '🌐'),
         el('div', { class: 'quick-link-name' }, l.name)
       ]);
+      if (l.custom) {
+        const del = el('span', {
+          class: 'quick-link-del', title: '删除',
+          onclick: (e) => { e.preventDefault(); e.stopPropagation(); deleteCustomLink(l.url); }
+        }, '✕');
+        link.appendChild(del);
+      }
       dom.quickLinks.appendChild(link);
     });
+    // 添加按钮
+    const addBtn = el('a', {
+      class: 'quick-link quick-link-add', href: '#',
+      onclick: (e) => { e.preventDefault(); openCustomLinkModal(); }
+    }, [
+      el('div', { class: 'quick-link-icon' }, '➕'),
+      el('div', { class: 'quick-link-name' }, '添加')
+    ]);
+    dom.quickLinks.appendChild(addBtn);
+  }
+  function openCustomLinkModal() {
+    const m = document.getElementById('custom-link-modal');
+    if (m) { m.style.display = 'flex'; document.getElementById('custom-link-name').focus(); }
+  }
+  function closeCustomLinkModal() {
+    const m = document.getElementById('custom-link-modal');
+    if (m) m.style.display = 'none';
+  }
+  function saveCustomLinkFromModal() {
+    const nameEl = document.getElementById('custom-link-name');
+    const urlEl = document.getElementById('custom-link-url');
+    const name = (nameEl.value || '').trim();
+    let url = (urlEl.value || '').trim();
+    if (!name || !url) { flashShortMsg('请填写名称和网址'); return; }
+    if (!/^https?:\/\//i.test(url)) url = 'https://' + url;
+    const list = loadCustomLinks();
+    if (list.some(l => l.url === url)) { flashShortMsg('该网址已存在'); return; }
+    list.push({ name: name, url: url, icon: '⭐', color: '#6c5ce7' });
+    saveCustomLinks(list);
+    nameEl.value = ''; urlEl.value = '';
+    closeCustomLinkModal();
+    renderQuickLinks();
+    flashShortMsg('✅ 已添加：' + name);
+  }
+  function deleteCustomLink(url) {
+    const list = loadCustomLinks().filter(l => l.url !== url);
+    saveCustomLinks(list);
+    renderQuickLinks();
+    flashShortMsg('已删除快捷网址');
+  }
+  function startClock() {
+    const el = document.getElementById('newtab-clock');
+    const dateEl = document.getElementById('newtab-date');
+    if (!el) return;
+    const days = ['周日','周一','周二','周三','周四','周五','周六'];
+    function tick() {
+      const now = new Date();
+      const h = String(now.getHours()).padStart(2,'0');
+      const m = String(now.getMinutes()).padStart(2,'0');
+      const s = String(now.getSeconds()).padStart(2,'0');
+      el.textContent = h + ':' + m + ':' + s;
+      if (dateEl) {
+        dateEl.textContent = now.getFullYear() + '年' + (now.getMonth()+1) + '月' + now.getDate() + '日 ' + days[now.getDay()];
+      }
+    }
+    tick();
+    setInterval(tick, 1000);
   }
   /* ---------- Search Engine UI ---------- */
   function renderNewTabSearchEngineBadge() {
@@ -7353,6 +7506,14 @@ body.mini-dragging { cursor: ns-resize !important; user-select: none !important;
       initNavigationBridge();
       initTouchGestures();
       renderQuickLinks();
+      startClock();
+      // 自定义快捷网址弹窗事件
+      const clCancel = document.getElementById('custom-link-cancel');
+      const clSave = document.getElementById('custom-link-save');
+      const clModal = document.getElementById('custom-link-modal');
+      if (clCancel) clCancel.addEventListener('click', closeCustomLinkModal);
+      if (clSave) clSave.addEventListener('click', saveCustomLinkFromModal);
+      if (clModal) clModal.addEventListener('click', function(e) { if (e.target === clModal) closeCustomLinkModal(); });
       let settings = {};
       try { settings = await api.settings.get() || {}; } catch (e) { console.warn('settings load failed:', e); }
       if (!INCOGNITO) { try { applyTheme(settings.theme || 'light'); } catch (e) { console.warn(e); } }

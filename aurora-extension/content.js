@@ -30,8 +30,146 @@
     chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
       if (message.type === "blockerToggle") {
         blockerEnabled = message.enabled;
+        sendResponse({ ok: true });
+      } else if (message.type === "getPageText") {
+        // 提取页面正文文本（供"一键 AI 总结"使用）
+        sendResponse({ ok: true, text: extractPageText() });
+      } else if (message.type === "readerMode") {
+        // 阅读模式：去广告纯净阅读
+        toggleReaderMode();
+        sendResponse({ ok: true });
+      } else if (message.type === "darkModeToggle") {
+        // 暗黑模式切换
+        var dm = toggleDarkMode();
+        sendResponse({ ok: true, enabled: dm });
+      } else {
+        sendResponse({ ok: true });
       }
-      sendResponse({ ok: true });
+      return false;
+    });
+  } catch (e) {}
+
+  // 提取页面正文文本（优先取正文区域，其次全文）
+  function extractPageText() {
+    try {
+      var text = "";
+      var selectors = [
+        "article", "main", '[role="main"]', "#content", ".content",
+        ".article", ".post-content", ".entry-content", "#article", "#main-content",
+      ];
+      for (var i = 0; i < selectors.length; i++) {
+        var el = document.querySelector(selectors[i]);
+        if (el && el.innerText && el.innerText.length > text.length) {
+          text = el.innerText;
+        }
+      }
+      if (!text || text.length < 80) {
+        text = document.body ? document.body.innerText : "";
+      }
+      // 限制最大长度，避免超长文本拖慢摘要
+      if (text.length > 30000) text = text.slice(0, 30000);
+      return text;
+    } catch (e) {
+      return "";
+    }
+  }
+
+  // ========== 阅读模式（去广告纯净阅读） ==========
+  var readerOverlay = null;
+  function toggleReaderMode() {
+    if (readerOverlay && readerOverlay.parentNode) {
+      readerOverlay.parentNode.removeChild(readerOverlay);
+      readerOverlay = null;
+      document.body.style.overflow = "";
+      return;
+    }
+    var text = extractPageText();
+    if (!text || text.length < 50) {
+      showReaderTip("当前页面内容过短，无法进入阅读模式。");
+      return;
+    }
+    // 提取标题
+    var title = document.title || "阅读模式";
+    var h1 = document.querySelector("h1");
+    if (h1 && h1.innerText) title = h1.innerText.trim();
+
+    readerOverlay = document.createElement("div");
+    readerOverlay.id = "aurora-reader-overlay";
+    readerOverlay.style.cssText = "position:fixed;top:0;left:0;width:100%;height:100%;z-index:2147483646;overflow-y:auto;background:#fdf6e3;color:#333;font-family:'Georgia','Songti SC',serif;line-height:1.8;";
+    readerOverlay.innerHTML =
+      '<div style="max-width:720px;margin:0 auto;padding:40px 24px 80px;">' +
+      '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;">' +
+      '<span style="font-size:13px;color:#888;">📖 极光阅读模式</span>' +
+      '<button id="aurora-reader-close" style="background:#eee;border:none;border-radius:6px;padding:6px 14px;cursor:pointer;font-size:13px;">✕ 关闭</button>' +
+      '</div>' +
+      '<h1 style="font-size:26px;font-weight:700;margin-bottom:8px;line-height:1.4;">' + escapeHtml(title) + '</h1>' +
+      '<div style="font-size:13px;color:#999;margin-bottom:32px;">' + window.location.hostname + '</div>' +
+      '<div id="aurora-reader-content" style="font-size:17px;white-space:pre-wrap;word-break:break-word;"></div>' +
+      '</div>';
+    document.documentElement.appendChild(readerOverlay);
+    document.getElementById("aurora-reader-content").textContent = text;
+    document.getElementById("aurora-reader-close").addEventListener("click", function () {
+      if (readerOverlay && readerOverlay.parentNode) {
+        readerOverlay.parentNode.removeChild(readerOverlay);
+        readerOverlay = null;
+        document.body.style.overflow = "";
+      }
+    });
+    document.body.style.overflow = "hidden";
+    readerOverlay.scrollTop = 0;
+  }
+
+  function showReaderTip(msg) {
+    var tip = document.createElement("div");
+    tip.style.cssText = "position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:2147483647;background:rgba(20,20,40,0.95);color:#fff;padding:12px 24px;border-radius:10px;font-size:14px;font-family:sans-serif;box-shadow:0 4px 20px rgba(0,0,0,0.3);";
+    tip.textContent = msg;
+    document.documentElement.appendChild(tip);
+    setTimeout(function () { if (tip.parentNode) tip.parentNode.removeChild(tip); }, 2500);
+  }
+
+  function escapeHtml(s) {
+    var div = document.createElement("div");
+    div.textContent = s;
+    return div.innerHTML;
+  }
+
+  // ========== 暗黑模式 ==========
+  var darkStyle = null;
+  var darkEnabled = false;
+  function toggleDarkMode() {
+    darkEnabled = !darkEnabled;
+    if (darkEnabled) {
+      if (!darkStyle) {
+        darkStyle = document.createElement("style");
+        darkStyle.id = "aurora-dark-style";
+        darkStyle.textContent =
+          "html.aurora-dark-mode { filter: invert(1) hue-rotate(180deg); }" +
+          "html.aurora-dark-mode img, html.aurora-dark-mode video, html.aurora-dark-mode iframe, html.aurora-dark-mode canvas, html.aurora-dark-mode svg, html.aurora-dark-mode [style*=background-image] { filter: invert(1) hue-rotate(180deg); }";
+        document.head.appendChild(darkStyle);
+      }
+      document.documentElement.classList.add("aurora-dark-mode");
+    } else {
+      document.documentElement.classList.remove("aurora-dark-mode");
+    }
+    try { chrome.storage.sync.set({ darkModeEnabled: darkEnabled }); } catch (e) {}
+    return darkEnabled;
+  }
+
+  // 页面加载时恢复暗黑模式状态
+  try {
+    chrome.storage.sync.get(["darkModeEnabled"], function (result) {
+      if (result.darkModeEnabled) {
+        darkEnabled = true;
+        if (!darkStyle) {
+          darkStyle = document.createElement("style");
+          darkStyle.id = "aurora-dark-style";
+          darkStyle.textContent =
+            "html.aurora-dark-mode { filter: invert(1) hue-rotate(180deg); }" +
+            "html.aurora-dark-mode img, html.aurora-dark-mode video, html.aurora-dark-mode iframe, html.aurora-dark-mode canvas, html.aurora-dark-mode svg { filter: invert(1) hue-rotate(180deg); }";
+          document.head.appendChild(darkStyle);
+        }
+        document.documentElement.classList.add("aurora-dark-mode");
+      }
     });
   } catch (e) {}
 
