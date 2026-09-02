@@ -211,4 +211,24 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
     }
     return true;
   }
+  // 加入比价：存储商品信息
+  if (message.type === "addToCompareBG") {
+    try {
+      chrome.storage.local.get(["aurora_compare_list"], function (result) {
+        var list = result.aurora_compare_list || [];
+        var product = message.product;
+        if (product && product.price > 0) {
+          if (!list.some(function (p) { return p.url === product.url; })) {
+            list.push(product);
+            if (list.length > 10) list = list.slice(0, 10);
+            chrome.storage.local.set({ aurora_compare_list: list });
+          }
+        }
+      });
+      sendResponse({ ok: true });
+    } catch (e) {
+      sendResponse({ ok: false, error: e.message });
+    }
+    return true;
+  }
 });

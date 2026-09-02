@@ -565,3 +565,118 @@ function formatLaterTime(ts) {
   if (diff < 86400) return Math.floor(diff / 3600) + "小时前";
   return (d.getMonth() + 1) + "/" + d.getDate();
 }
+
+
+// ========== 商品比价（v1.3.0） ==========
+var COMPARE_KEY = "aurora_compare_list";
+function loadCompareList(cb) {
+  try {
+    chrome.storage.local.get([COMPARE_KEY], function (result) { cb(result[COMPARE_KEY] || []); });
+  } catch (e) { cb([]); }
+}
+function saveCompareList(list) {
+  var obj = {}; obj[COMPARE_KEY] = list;
+  chrome.storage.local.set(obj);
+}
+function renderCompareList() {
+  var listEl = document.getElementById("compareList");
+  var summaryEl = document.getElementById("compareSummary");
+  if (!listEl) return;
+  loadCompareList(function (list) {
+    if (!list || list.length === 0) {
+      listEl.innerHTML = '<span class="sn-compare-empty">在商品页点"加入比价"，或点"➕ 当前页"添加</span>';
+      if (summaryEl) summaryEl.style.display = "none";
+      return;
+    }
+    // 按价格排序
+    var sorted = list.slice().sort(function (a, b) { return a.price - b.price; });
+    var minPrice = sorted[0].price;
+    var maxPrice = sorted[sorted.length - 1].price;
+    var diff = maxPrice - minPrice;
+
+    // 总结
+    if (summaryEl && list.length >= 2) {
+      var cheapest = sorted[0];
+      var dearest = sorted[sorted.length - 1];
+      var pct = diff / dearest.price * 100;
+      summaryEl.style.display = "block";
+      summaryEl.innerHTML =
+        '<div class="sn-compare-best">🏆 最便宜：' + escapeHtml(cheapest.title.slice(0, 20)) + '（¥' + cheapest.price.toFixed(2) + '）</div>' +
+        '<div class="sn-compare-diff">比最贵的便宜 ¥' + diff.toFixed(2) + '（' + pct.toFixed(1) + '%）</div>';
+    } else if (summaryEl) {
+      summaryEl.style.display = "none";
+    }
+
+    // 列表
+    listEl.innerHTML = "";
+    sorted.forEach(function (item, idx) {
+      var div = document.createElement("div");
+      div.className = "sn-compare-item" + (item.price === minPrice && list.length >= 2 ? " best" : "");
+      var badge = idx === 0 && list.length >= 2 ? '<span class="sn-compare-badge">最便宜</span>' : "";
+      div.innerHTML =
+        '<div class="sn-compare-title">' + badge + escapeHtml(item.title) + '</div>' +
+        '<div class="sn-compare-meta">' + escapeHtml(item.host) + '</div>' +
+        '<div class="sn-compare-price">¥' + item.price.toFixed(2) + '</div>' +
+        '<div class="sn-compare-actions">' +
+        '<button class="sn-compare-open" data-url="' + escapeAttr(item.url) + '">打开</button>' +
+        '<button class="sn-compare-del" data-url="' + escapeAttr(item.url) + '">删除</button>' +
+        '</div>';
+      listEl.appendChild(div);
+    });
+
+    // 绑定事件
+    listEl.querySelectorAll(".sn-compare-open").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var url = this.getAttribute("data-url");
+        chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+          if (tabs[0]) chrome.tabs.update(tabs[0].id, { url: url });
+        });
+      });
+    });
+    listEl.querySelectorAll(".sn-compare-del").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var url = this.getAttribute("data-url");
+        loadCompareList(function (list) {
+          var filtered = list.filter(function (i) { return i.url !== url; });
+          saveCompareList(filtered);
+          renderCompareList();
+        });
+      });
+    });
+  });
+}
+
+// 绑定比价按钮
+document.addEventListener("DOMContentLoaded", function () {
+  var addBtn = document.getElementById("btn-compare-add");
+  if (addBtn) {
+    addBtn.addEventListener("click", function () {
+      chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+        if (!tabs[0]) return;
+        chrome.tabs.sendMessage(tabs[0].id, { type: "getProductInfo" }, function (resp) {
+          if (resp && resp.ok && resp.product && resp.product.price > 0) {
+            loadCompareList(function (list) {
+              if (!list.some(function (p) { return p.url === resp.product.url; })) {
+                list.push(resp.product);
+                if (list.length > 10) list = list.slice(0, 10);
+                saveCompareList(list);
+                renderCompareList();
+                if (typeof flashShortMsg === "function") flashShortMsg("已加入比价：" + resp.product.title.slice(0, 15));
+              }
+            });
+          } else {
+            if (typeof flashShortMsg === "function") flashShortMsg("当前页未识别到商品价格");
+          }
+        });
+      });
+    });
+  }
+  var clearBtn = document.getElementById("btn-compare-clear");
+  if (clearBtn) {
+    clearBtn.addEventListener("click", function () {
+      saveCompareList([]);
+      renderCompareList();
+    });
+  }
+  renderCompareList();
+});

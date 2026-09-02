@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "极光快导",
-  "version": "1.2.0",
-  "description": "极光快导：分屏导航+沉浸式阅读+防弹窗+隐私保护。阅读模式2.0（智能正文/目录/字体调节/主题）、划词查询、稍后阅读。",
+  "version": "1.3.0",
+  "description": "极光快导：沉浸式阅读+高效分屏导航+商品比价，纯净无广告",
   "permissions": [
     "storage",
     "browsingData",

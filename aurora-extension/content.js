@@ -57,6 +57,13 @@
           chrome.runtime.sendMessage({ type: "openSidebarSearch", text: message.text });
         } catch (e) {}
         sendResponse({ ok: true });
+      } else if (message.type === "getProductInfo") {
+        // 获取当前页商品信息（比价用）
+        sendResponse({ ok: true, product: extractProductInfo() });
+      } else if (message.type === "addToCompare") {
+        // 加入比价列表
+        var product = extractProductInfo();
+        sendResponse({ ok: true, product: product });
       } else {
         sendResponse({ ok: true });
       }
@@ -575,6 +582,135 @@
 
   // 初始化导航时间
   lastNavigationTime = Date.now();
+
+  // ========== 商品价格识别（比价功能核心） ==========
+  function extractProductInfo() {
+    try {
+      // 1. 识别商品标题
+      var title = "";
+      var titleSelectors = [
+        "h1", ".sku-name", ".tb-main-title", "#J_Title", ".tm-title",
+        ".goods-name", ".product-title", ".item-title", ".title",
+        "[class*=title]", "[class*=Title]"
+      ];
+      for (var i = 0; i < titleSelectors.length; i++) {
+        var el = document.querySelector(titleSelectors[i]);
+        if (el && el.innerText && el.innerText.trim().length >= 4 && el.innerText.trim().length <= 200) {
+          title = el.innerText.trim();
+          break;
+        }
+      }
+      if (!title) title = document.title || "未命名商品";
+      // 清理标题中的网站名后缀
+      title = title.replace(/[-_|].*?(淘宝|天猫|京东|拼多多|苏宁|国美|亚马逊|当当).*$/i, "").trim();
+      if (title.length > 80) title = title.slice(0, 80) + "...";
+
+      // 2. 识别价格
+      var price = extractPrice();
+
+      // 3. 识别商品图片
+      var image = "";
+      var imgSelectors = ["#J_ImgBooth", ".tb-booth img", "#spec-img", ".goods-img img", ".product-image img", "img[itemprop=image]"];
+      for (var j = 0; j < imgSelectors.length; j++) {
+        var img = document.querySelector(imgSelectors[j]);
+        if (img && img.src) { image = img.src; break; }
+      }
+
+      return {
+        title: title,
+        price: price,
+        priceText: price > 0 ? "¥" + price.toFixed(2) : "未识别",
+        image: image,
+        url: window.location.href,
+        host: window.location.hostname,
+        extractedAt: Date.now()
+      };
+    } catch (e) {
+      return { title: document.title, price: 0, priceText: "识别失败", url: window.location.href, host: window.location.hostname };
+    }
+  }
+
+  function extractPrice() {
+    try {
+      var prices = [];
+      // 方法1：常见价格元素选择器
+      var priceSelectors = [
+        ".tm-price", ".tb-rmb-num", ".p-price .price", ".p-price",
+        ".price", ".goods-price", ".product-price", ".item-price",
+        "[class*=price]", "[class*=Price]", "[class*=rmb]", "[class*=Rmb]"
+      ];
+      for (var i = 0; i < priceSelectors.length; i++) {
+        var els = document.querySelectorAll(priceSelectors[i]);
+        for (var j = 0; j < els.length; j++) {
+          var text = els[j].innerText || els[j].textContent || "";
+          var p = parsePriceText(text);
+          if (p > 0 && p < 1000000) {
+            // 加权：字号大的、在页面上半部分的更可能是真实价格
+            var rect = els[j].getBoundingClientRect();
+            var fontSize = parseFloat(window.getComputedStyle(els[j]).fontSize) || 14;
+            var weight = fontSize * 10 + (rect.top < window.innerHeight * 0.5 ? 50 : 0);
+            prices.push({ price: p, weight: weight });
+          }
+        }
+      }
+      // 方法2：全文正则匹配
+      var bodyText = document.body ? document.body.innerText : "";
+      var priceRegex = /[¥￥$]\s*(\d+(?:\.\d{1,2})?)|(\d+(?:\.\d{1,2})?)\s*元/g;
+      var match;
+      while ((match = priceRegex.exec(bodyText)) !== null) {
+        var p = parseFloat(match[1] || match[2]);
+        if (p > 0 && p < 1000000) {
+          prices.push({ price: p, weight: 5 });
+        }
+      }
+      if (prices.length === 0) return 0;
+      // 按权重排序，取最高的
+      prices.sort(function (a, b) { return b.weight - a.weight; });
+      // 取前3个的中位数（避免异常值）
+      var top3 = prices.slice(0, 3).map(function (x) { return x.price; }).sort(function (a, b) { return a - b; });
+      return top3[Math.floor(top3.length / 2)];
+    } catch (e) {
+      return 0;
+    }
+  }
+
+  function parsePriceText(text) {
+    if (!text) return 0;
+    var m = text.match(/[¥￥$]\s*(\d+(?:\.\d{1,2})?)|(\d+(?:\.\d{1,2})?)\s*元/);
+    return m ? parseFloat(m[1] || m[2]) : 0;
+  }
+
+  // 商品页面显示"加入比价"浮动按钮
+  var compareBtn = null;
+  function maybeShowCompareButton() {
+    try {
+      var product = extractProductInfo();
+      // 只在识别到价格的商品页面显示
+      if (product.price <= 0) { if (compareBtn) { compareBtn.style.display = "none"; } return; }
+      if (!compareBtn) {
+        compareBtn = document.createElement("div");
+        compareBtn.id = "aurora-compare-btn";
+        compareBtn.style.cssText = "position:fixed;right:16px;bottom:80px;z-index:2147483645;background:linear-gradient(135deg,#ff6b35,#f7931e);color:#fff;padding:10px 16px;border-radius:24px;font-size:13px;font-family:sans-serif;cursor:pointer;box-shadow:0 4px 16px rgba(255,107,53,0.4);transition:transform 0.2s;user-select:none;";
+        compareBtn.innerHTML = "⚖️ 加入比价";
+        compareBtn.addEventListener("click", function () {
+          try {
+            chrome.runtime.sendMessage({ type: "addToCompareBG", product: extractProductInfo() });
+            compareBtn.innerHTML = "✅ 已加入比价";
+            setTimeout(function () { compareBtn.innerHTML = "⚖️ 加入比价"; }, 2000);
+          } catch (e) {}
+        });
+        document.documentElement.appendChild(compareBtn);
+      }
+      compareBtn.style.display = "block";
+    } catch (e) {}
+  }
+
+  // 页面加载完成后检测是否商品页
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", function () { setTimeout(maybeShowCompareButton, 1500); });
+  } else {
+    setTimeout(maybeShowCompareButton, 1500);
+  }
 
   // ========== 划词查询（高效导航核心） ==========
   var selectionPopup = null;
