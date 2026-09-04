@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { width: 260px; font-family: -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif; background: #f7f8fa; }
+    .header { background: linear-gradient(135deg, #4285f4, #34a853); color: #fff; padding: 14px; }
+    .header h1 { font-size: 15px; }
+    .header p { font-size: 11px; opacity: 0.85; margin-top: 2px; }
+    .menu { padding: 8px; }
+    .menu-item { display: flex; align-items: center; gap: 10px; width: 100%; padding: 12px; margin-bottom: 6px; border: none; border-radius: 8px; background: #fff; cursor: pointer; font-size: 13px; color: #333; text-align: left; transition: background 0.2s; }
+    .menu-item:hover { background: #eef2ff; }
+    .menu-item .icon { font-size: 18px; }
+    .menu-item .desc { font-size: 11px; color: #999; }
+    .footer { text-align: center; color: #bbb; font-size: 10px; padding: 8px; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>🔧 极光工具箱</h1>
+    <p>比价 · 总结 · 翻译 三合一</p>
+  </div>
+  <div class="menu">
+    <button class="menu-item" id="open-panel">
+      <span class="icon">🖥️</span>
+      <span>打开工具箱面板<BR><span class="desc">总结 / 翻译 / 比价 全功能</span></span>
+    </button>
+    <button class="menu-item" id="btn-summarize">
+      <span class="icon">📋</span>
+      <span>总结当前网页<BR><span class="desc">一键提取核心要点</span></span>
+    </button>
+    <button class="menu-item" id="btn-translate">
+      <span class="icon">🌐</span>
+      <span>翻译当前网页<BR><span class="desc">整页中英翻译</span></span>
+    </button>
+    <button class="menu-item" id="btn-compare">
+      <span class="icon">⚖️</span>
+      <span>加入比价<BR><span class="desc">识别当前商品价格</span></span>
+    </button>
+  </div>
+  <div class="footer">数据本地保存 · 不上传</div>
+  <script src="popup.js"></script>
+</body>
+</html>
