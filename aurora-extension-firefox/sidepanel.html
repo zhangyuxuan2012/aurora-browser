@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>极光快导 - 分屏导航</title>
+  <link rel="stylesheet" href="sidepanel.css">
+</head>
+<body>
+  <div class="side-nav">
+    <!-- 头部 -->
+    <div class="sn-header">
+      <div class="sn-logo">🌌</div>
+      <div class="sn-title">
+        <h2>极光导航</h2>
+        <span>分屏模式 · 左屏浏览右屏导航</span>
+      </div>
+    </div>
+
+    <!-- 搜索框 -->
+    <div class="sn-search">
+      <input type="text" id="searchInput" placeholder="搜索网站或输入网址..." autocomplete="off">
+    </div>
+
+    <!-- 分类标签 -->
+    <div class="sn-categories" id="categories">
+      <!-- 动态生成 -->
+    </div>
+
+    <!-- 网站列表 -->
+    <div class="sn-sites" id="sitesList">
+      <!-- 动态生成 -->
+    </div>
+
+    <!-- 底部功能栏 -->
+    <div class="sn-footer">
+      <button class="sn-fbtn" id="btn-refresh" title="刷新左屏页面">🔄 刷新</button>
+      <button class="sn-fbtn" id="btn-back" title="左屏后退">⬅️ 后退</button>
+      <button class="sn-fbtn" id="btn-forward" title="左屏前进">➡️ 前进</button>
+      <button class="sn-fbtn" id="btn-full" title="打开完整导航">🔗 全导航</button>
+    </div>
+    <!-- 工具行（v1.1.0） -->
+    <div class="sn-footer sn-footer-tools">
+      <button class="sn-fbtn" id="btn-reader" title="阅读模式：去广告纯净阅读">📖 阅读</button>
+      <button class="sn-fbtn" id="btn-dark" title="暗黑模式切换">🌙 暗黑</button>
+      <button class="sn-fbtn" id="btn-screenshot" title="截取当前页面并下载">📷 截图</button>
+      <button class="sn-fbtn" id="btn-custom-add" title="添加自定义快捷网址">➕ 自定义</button>
+    </div>
+
+    <!-- AI 一键总结 -->
+    <div class="sn-ai">
+      <button class="sn-fbtn sn-ai-btn" id="btn-ai-summary" title="一键总结本页长文本核心要点">✨ AI 总结本页</button>
+      <div class="sn-ai-result" id="aiResult" style="display:none;">
+        <div class="sn-ai-head">📋 本页核心要点</div>
+        <div class="sn-ai-body" id="aiResultBody"></div>
+        <div class="sn-ai-meta" id="aiResultMeta"></div>
+        <div class="sn-ai-actions">
+          <button class="sn-ai-small" id="btn-ai-copy">📋 复制</button>
+          <button class="sn-ai-small" id="btn-ai-close">✕ 关闭</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 自定义快捷网址（v1.1.0） -->
+    <div class="sn-custom" id="customSection">
+      <div class="sn-custom-head">
+        <span>⭐ 我的快捷网址</span>
+        <button class="sn-custom-add" id="btn-custom-add2">➕ 添加</button>
+      </div>
+      <div class="sn-custom-list" id="customList">
+        <span class="sn-custom-empty">暂无自定义网址，点击"添加"创建</span>
+      </div>
+    </div>
+
+    <!-- 自定义网址弹窗 -->
+    <div class="sn-custom-modal" id="customModal" style="display:none;">
+      <div class="sn-custom-modal-box">
+        <h4>添加快捷网址</h4>
+        <input type="text" id="customName" placeholder="网站名称（如：知乎）" maxlength="20">
+        <input type="text" id="customUrl" placeholder="网址（如：https://zhihu.com）">
+        <div class="sn-custom-modal-actions">
+          <button id="btn-custom-cancel">取消</button>
+          <button id="btn-custom-save">保存</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 稍后阅读（v1.2.0 沉浸式阅读核心） -->
+    <div class="sn-later" id="laterSection">
+      <div class="sn-later-head">
+        <span>📚 稍后阅读</span>
+        <button class="sn-later-save" id="btn-later-save">💾 保存当前页</button>
+      </div>
+      <div class="sn-later-list" id="laterList">
+        <span class="sn-later-empty">暂无保存的文章，点击"保存当前页"</span>
+      </div>
+    </div>
+
+    <!-- 比价功能（v1.3.0 高效分屏导航核心） -->
+    <div class="sn-compare" id="compareSection">
+      <div class="sn-compare-head">
+        <span>⚖️ 商品比价</span>
+        <div>
+          <button class="sn-compare-add" id="btn-compare-add">➕ 当前页</button>
+          <button class="sn-compare-clear" id="btn-compare-clear">清空</button>
+        </div>
+      </div>
+      <div class="sn-compare-summary" id="compareSummary" style="display:none;"></div>
+      <div class="sn-compare-list" id="compareList">
+        <span class="sn-compare-empty">在商品页点"加入比价"，或点"➕ 当前页"添加</span>
+      </div>
+    </div>
+
+    <!-- 拦截统计 -->
+    <div class="sn-stats" id="stats">
+      🛡️ 已拦截 <span id="blockedNum">0</span> 个弹窗
+    </div>
+  </div>
+
+  <script src="ai_summary.js"></script>
+  <script src="sidepanel.js"></script>
+</body>
+</html>
