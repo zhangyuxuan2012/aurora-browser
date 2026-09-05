@@ -1,17 +1,17 @@
-AuroraBrowser V7.2.7（最终版）SHA256 校验清单
+AuroraBrowser V7.2.8（最终版）SHA256 校验清单
 生成时间：2026-09-05 UTC+8
-说明：V7.2.7 新增 27 个书签快捷链接（AI工具/游戏/工具分类，已去重），EXE 已重建内嵌最新网页版，最终版 HTML 已内嵌新 EXE。
+说明：V7.2.8 封面导航 222 个网站（201 原有 + 21 书签）；封面改用 base64 编码 + 去注释，index.html 体积减小 15%（1268→1077KB），加载更快。
 
-=== Windows EXE（绿色免安装）V7.2.7 ===
-SHA256 (极光浏览器-桌面版EXE-绿色免安装-7.0.0.exe) = 267A3507005BDF994D4EF39666886B542741BEB70FE3FBCD581535FDD77FD427
+=== Windows EXE（绿色免安装）V7.2.8 ===
+SHA256 (极光浏览器-桌面版EXE-绿色免安装-7.0.0.exe) = 472B55A11DDE797792F22DF9AA99456C60209D2D033FBBF5ADC4CB7C9451553D
 下载: https://github.com/zhangyuxuan2012/aurora-browser/releases/latest/download/AuroraBrowser-Portable-v7.0.0.exe
 
-=== 网页版（浏览器主体）V7.2.7 ===
-SHA256 (index.html) = C1E1D50F8A9AB38AB07B9DC029BDD1ADA7E26272DF29A3C1CFC5EFB23C18160F
+=== 网页版（浏览器主体）V7.2.8 ===
+SHA256 (index.html) = F649D8A6A61D39B323B55212EEC74C7B9BA1CC1AA4256C8384BD58DB3CC8ABF0
 线上: https://zhangyuxuan2012.github.io/zhangyuxuan/
 
-=== 完整版网页（内嵌封面+EXE）V7.2.7 ===
-SHA256 (极光浏览器-最终版.html) = 485F378749F8B51A722C26AB99CFAD747060BCB504AB7A2BF7A074F4C7127A4E
+=== 完整版网页（内嵌封面+EXE）V7.2.8 ===
+SHA256 (极光浏览器-最终版.html) = 1BDB110BA196468CBABB53A9FB7A55302BE9B62AB8D5199133725DAF942B3F63
 
 === 浏览器扩展 ===
 极光快导 v1.4.0 (Chrome) SHA256 (极光快导-浏览器扩展-v1.4.0.zip) = 97EC6748E9C57644161F04A0652615FFF8D088B14D926FD0CC1C2D754DE12168
