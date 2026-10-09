@@ -3,7 +3,7 @@
 <meta charset="UTF-8">
 <meta name="newbie-tip" content="极光浏览器新手引导：6步手把手教学你使用浏览器各项功能">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
-<title>极光浏览器 V7.0</title>
+<title>极光浏览器 V7.2.8</title>
 <style>
 * {
   margin: 0;
@@ -2333,7 +2333,7 @@ body.mini-dragging { cursor: ns-resize !important; user-select: none !important;
 <!-- Dynamic Island Toast (灵动岛通知) -->
 <div class="dynamic-island-toast" id="dynamic-island-toast">
   <div class="di-toast-icon">🎉</div>
-  <div class="di-toast-text">欢迎来到 V7.0 版本 PC 端</div>
+  <div class="di-toast-text">欢迎来到 V7.2.8 版本</div>
 </div>
 <header id="tabbar">
   <div id="tabs-container" class="tabs-container"></div>
@@ -3028,7 +3028,7 @@ body.mini-dragging { cursor: ns-resize !important; user-select: none !important;
     <div class="cover-section" id="cover-preview-section" style="display:none">
       <div class="cover-section-title">预览</div>
       <div class="cover-preview">
-        <iframe id="cover-preview-frame" sandbox="allow-scripts allow-same-origin allow-forms allow-popups"></iframe>
+        <iframe id="cover-preview-frame" sandbox="allow-scripts allow-forms allow-popups"></iframe>
       </div>
     </div>
     <div class="cover-section">
@@ -3737,7 +3737,7 @@ body.mini-dragging { cursor: ns-resize !important; user-select: none !important;
     const iframe = document.createElement(isWebView ? 'webview' : 'iframe');
     iframe.setAttribute('class', 'webview' + (isWebView ? ' webview-electron' : ''));
     if (!isWebView) {
-      iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox allow-presentation allow-downloads allow-modals allow-pointer-lock');
+      iframe.setAttribute('sandbox', 'allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox allow-presentation allow-downloads allow-modals allow-pointer-lock');
       // 权限策略：允许 iframe 内网页锁定鼠标指针（网页游戏需要），按 ESC 键即可退出锁定
       iframe.setAttribute('allow', 'pointer-lock; fullscreen; autoplay; encrypted-media');
       iframe.setAttribute('referrerpolicy', 'no-referrer');
@@ -5243,7 +5243,7 @@ body.mini-dragging { cursor: ns-resize !important; user-select: none !important;
         }
         break;
       case 'about':
-        alert('🚀 极光浏览器 V7.0\n开发者：张雨轩\n\n' + (IS_ELECTRON ? '桌面版 (Electron)' : '单文件版 HTML 浏览器') + '\n\n特性：\n• 内置网站导航，一键直达 200+ 游戏\n• 多标签页 & 固定标签\n• 书签 / 历史记录 / 下载面板\n• 页内查找、全屏、缩放、无痕窗口\n• 恢复刚关闭的标签页\n• 国内 favicon CDN 镜像加速\n' + (IS_ELECTRON ? '• WebView 内核，访问任意网站\n• 下载自动接管、本地数据持久化' : '• 轻量无依赖，双击 index.html 即用\n• 如需完整功能请下载桌面版'));
+        alert('🚀 极光浏览器 V7.2.8\n开发者：张雨轩\n\n' + (IS_ELECTRON ? '桌面版 (Electron)' : '单文件版 HTML 浏览器') + '\n\n特性：\n• 内置网站导航，一键直达 200+ 游戏\n• 多标签页 & 固定标签\n• 书签 / 历史记录 / 下载面板\n• 页内查找、全屏、缩放、无痕窗口\n• 恢复刚关闭的标签页\n• 国内 favicon CDN 镜像加速\n' + (IS_ELECTRON ? '• WebView 内核，访问任意网站\n• 下载自动接管、本地数据持久化' : '• 轻量无依赖，双击 index.html 即用\n• 如需完整功能请下载桌面版'));
         break;
       case 'zoom-in': zoomActive(+0.1); break;
       case 'zoom-out': zoomActive(-0.1); break;
@@ -6849,7 +6849,7 @@ body.mini-dragging { cursor: ns-resize !important; user-select: none !important;
     '    return href.startsWith("http") || href.startsWith("//");' +
     '  }' +
     '  function openUrl(url) {' +
-    '    // 通过 postMessage 通知父窗口创建内部标签页' +
+    '    /* 通过 postMessage 通知父窗口创建内部标签页 */' +
     '    notifyParent(url, { newTab: true });' +
     '  }' +
     '  document.addEventListener("click", function(e) {' +
@@ -6869,7 +6869,7 @@ body.mini-dragging { cursor: ns-resize !important; user-select: none !important;
     '    }' +
     '    return origOpen ? origOpen.apply(this, arguments) : null;' +
     '  };' +
-    '  // 拦截表单提交到外部 URL' +
+    '  /* 拦截表单提交到外部 URL */' +
     '  document.addEventListener("submit", function(e) {' +
     '    var form = e.target;' +
     '    if (!form || !form.action) return;' +
@@ -6880,7 +6880,7 @@ body.mini-dragging { cursor: ns-resize !important; user-select: none !important;
     '      openUrl(action);' +
     '    }' +
     '  }, true);' +
-    '  // 拦截 location.href 赋值' +
+    '  /* 拦截 location.href 赋值 */' +
     '  try {' +
     '    var _href = window.location.href;' +
     '    Object.defineProperty(window.location, "href", {' +
@@ -6892,7 +6892,7 @@ body.mini-dragging { cursor: ns-resize !important; user-select: none !important;
     '      configurable: true' +
     '    });' +
     '  } catch(err) {}' +
-    '  // 拦截 location.assign / location.replace' +
+    '  /* 拦截 location.assign / location.replace */' +
     '  try {' +
     '    var origAssign = window.location.assign;' +
     '    var origReplace = window.location.replace;' +
@@ -6930,7 +6930,7 @@ body.mini-dragging { cursor: ns-resize !important; user-select: none !important;
     '  window.__traeTouchInjected = true;' +
     '  var isTouch = ("ontouchstart" in window) || navigator.maxTouchPoints > 0;' +
     '  if (!isTouch) return;' +
-    '  // 增大可点击元素的触控区域' +
+    '  /* 增大可点击元素的触控区域 */' +
     '  var style = document.createElement("style");' +
     '  style.textContent = "' +
     '    @media (pointer: coarse) {' +
@@ -6947,16 +6947,16 @@ body.mini-dragging { cursor: ns-resize !important; user-select: none !important;
     '    }' +
     '  ";' +
     '  if (document.head) document.head.appendChild(style);' +
-    '  // 禁止双击缩放' +
+    '  /* 禁止双击缩放 */' +
     '  var lastTouchEnd = 0;' +
     '  document.addEventListener("touchend", function(e) {' +
     '    var now = Date.now();' +
     '    if (now - lastTouchEnd <= 300) e.preventDefault();' +
     '    lastTouchEnd = now;' +
     '  }, { passive: false });' +
-    '  // 禁止手势缩放' +
+    '  /* 禁止手势缩放 */' +
     '  document.addEventListener("gesturestart", function(e) { e.preventDefault(); });' +
-    '  // 优化滚动：惯性滚动' +
+    '  /* 优化滚动：惯性滚动 */' +
     '  var scrollables = document.querySelectorAll("[data-scroll], .scrollable, .grid, .list");' +
     '  scrollables.forEach(function(el) {' +
     '    el.style.webkitOverflowScrolling = "touch";' +
@@ -7014,7 +7014,7 @@ body.mini-dragging { cursor: ns-resize !important; user-select: none !important;
     '        try { Object.defineProperty(pe, "__synthetic", { value: true }); } catch(e3) {}' +
     '        D.dispatchEvent(pe);' +
     '      }' +
-    '      // 边缘处的元素（如 canvas）直接派发，兼容只监听元素的事件' +
+    '      /* 边缘处的元素（如 canvas）直接派发，兼容只监听元素的事件 */' +
     '      var el = D.elementFromPoint(' +
     '        Math.max(0, Math.min(W.innerWidth - 1, Math.round(x))),' +
     '        Math.max(0, Math.min(W.innerHeight - 1, Math.round(y))));' +
@@ -7045,7 +7045,7 @@ body.mini-dragging { cursor: ns-resize !important; user-select: none !important;
     '' +
     '  D.addEventListener("mousemove", function(e) {' +
     '    if (isSynthetic(e)) return;' +
-    '    // 已锁定鼠标指针（游戏原生 Pointer Lock）：不干预' +
+    '    /* 已锁定鼠标指针（游戏原生 Pointer Lock）：不干预 */' +
     '    if (D.pointerLockElement) { stopPush(); return; }' +
     '    var x = e.clientX, y = e.clientY;' +
     '    var w = W.innerWidth, h = W.innerHeight;' +
