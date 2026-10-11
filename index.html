@@ -3478,14 +3478,15 @@ body.mini-dragging { cursor: ns-resize !important; user-select: none !important;
     if (tab.titleEl) tab.titleEl.textContent = '🏠 主页';
     tab.favicon = null;
     if (tab.faviconEl) updateTabFavicon(tab, tab.faviconEl);
-    // 封面拒绝访问回退：默认在线封面若 6 秒内未成功加载（被 X-Frame-Options/CSP 拒绝或无法访问）
-    // 自动切换到内置欢迎封面，保证封面永远可用
-    if (!hasCustomCover() && /^https?:/i.test(coverUrl) && tab.iframe) {
+    // 封面拒绝访问回退：任何封面若 6 秒内未成功加载（被 X-Frame-Options/CSP 拒绝、外部站点失效或无法访问）
+    // 自动切换到内置封面（BUILTIN_COVER 完全内嵌，不依赖任何外部网页），保证封面永远可用
+    if (tab.iframe) {
       var _covLoaded = false;
       var _covTimer = setTimeout(function () {
         if (!_covLoaded) {
           try {
-            if (tab.iframe) { tab.iframe.src = BUILTIN_COVER; tab.url = BUILTIN_COVER; }
+            if (tab.iframe) { tab.iframe.src = BUILTIN_COVER; tab.url = BUILTIN_COVER; tab.originalUrl = '导航主页'; }
+            if (typeof flashShortMsg === 'function') flashShortMsg('🔄 封面加载失败，已切换为内置导航封面', 2600);
           } catch (e) {}
         }
       }, 6000);
@@ -4605,6 +4606,9 @@ body.mini-dragging { cursor: ns-resize !important; user-select: none !important;
         tab.loading = false;
         showTabLoadingSpinner(tab, false);
         if (state.activeTabId === tab.id) showLoading(false);
+        // 封面标签永不走代理（封面为内嵌 data URI / blob，代理会破坏其渲染）；
+        // 封面加载失败由 createCoverTab 的 6 秒内嵌回退兜底
+        if (tab.isCover) return;
         // 网络错误也尝试通过代理重试
         if (tab.proxyIndex < PROXY_SERVICES.length - 1) {
           retryWithProxy(tab);
@@ -4613,7 +4617,9 @@ body.mini-dragging { cursor: ns-resize !important; user-select: none !important;
       // 4秒内如果还没加载完成，检查是否被阻止（比原来8秒更快）
       blockedTimer = setTimeout(() => {
         clearBlockedWatchdog(tab);
-        if (tab.loading && tab.url !== NEW_TAB_URL) {
+        // 封面标签跳过"被阻止"判定：sandbox 下 data URI/blob 的 contentDocument 恒为 null（跨域），
+        // 若按普通网页判定会被误判并代理化封面 → 封面永不走代理
+        if (tab.loading && tab.url !== NEW_TAB_URL && !tab.isCover) {
           try {
             const doc = ifr.contentDocument;
             // contentDocument 为 null：被 X-Frame-Options / CSP 拦截后 Chrome 不提供文档对象
